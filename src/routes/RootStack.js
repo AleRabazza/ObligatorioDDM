@@ -14,6 +14,9 @@ import LoginUser from "../screens/Usuarios/LoginUser";
 import ProfileUser from "../screens/Usuarios/ProfileUser";
 import ViewAllUser from "../screens/Usuarios/ViewAllUser";
 import UpdateUser from "../screens/Usuarios/UpdateUser";
+import RegisterMateriales from "../screens/Materiales/RegisterMateriales";
+import ViewAllMateriales from "../screens/Materiales/ViewAllMateriales";
+import UpdateMateriales from "../screens/Materiales/UpdateMateriales";
 
 const Stack = createStackNavigator();
 
@@ -34,6 +37,9 @@ const RootStack = () => {
         <Stack.Screen name="ViewAllUser" component={ViewAllUser} options={{ title: "Ver Todos los Usuarios" }} />
         <Stack.Screen name="UpdateUser" component={UpdateUser} options={{ title: "Actualizar Usuario" }} />
         {/* Rutas del menú de materiales */}
+        <Stack.Screen name="RegisterMateriales" component={RegisterMateriales} options={{ title: "Registrar Materiales" }} />
+        <Stack.Screen name="ViewAllMateriales" component={ViewAllMateriales} options={{ title: "Ver Todos los Materiales" }} />
+        <Stack.Screen name="UpdateMateriales" component={UpdateMateriales} options={{ title: "Actualizar Materiales" }} />
 
 
         {/* Rutas del menú de Reto */}

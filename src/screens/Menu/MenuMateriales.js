@@ -1,28 +1,28 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, SafeAreaView} from "react-native";
+import { View, Text, StyleSheet, ScrollView, SafeAreaView } from "react-native";
 import MyButton from "../../components/MyButton";
-const MenuMateriales = ({navigation}) => {
-  return (
-    <SafeAreaView>
-      <View style={styles.container}>
-        <ScrollView>
-          <MyButton title="AgregarMateriales" btnColor="blue" btnIcon="user-plus" customPress={() => navigation.navigate("Opcion1")} />
 
-          <MyButton title="Listar Materiales" btnColor="blue" btnIcon="user-plus"  customPress={() => navigation.navigate("Opcion2")} />
-            
-        </ScrollView>
-      </View>
+const MenuMateriales = ({ navigation }) => {
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <MyButton title="Agregar Materiales" btnColor="blue" btnIcon="plus-circle" customPress={() => navigation.navigate("RegisterMateriales")}/>
+        <MyButton title="Listar Materiales" btnColor="blue" btnIcon="list" customPress={() => navigation.navigate("ViewAllMateriales")} />
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    padding: 16,
     backgroundColor: "#fff",
   },
+  container: {
+    padding: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
-
 
 export default MenuMateriales;

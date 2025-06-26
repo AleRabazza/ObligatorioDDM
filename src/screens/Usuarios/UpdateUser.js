@@ -14,15 +14,29 @@ const UpdateUser = ({ route, navigation }) => {
         return;
       }
     }
+
     if (JSON.stringify(newUser) === JSON.stringify(user)) {
       Alert.alert("No realizaste cambios");
       return;
     }
+
+    if (newUser.userName !== user.userName) {
+      const existing = await AsyncStorage.getItem(newUser.userName);
+      if (existing) {
+        Alert.alert("Error", "Ya existe un usuario con ese nombre");
+        return;
+      }
+    }
+
+    
     await AsyncStorage.setItem(newUser.userName, JSON.stringify(newUser));
     await AsyncStorage.setItem("usuario_logueado", newUser.userName);
+
+   
     if (newUser.userName !== user.userName) {
       await AsyncStorage.removeItem(user.userName);
     }
+
     Alert.alert("Éxito", "Datos actualizados", [
       { text: "OK", onPress: () => navigation.navigate("ProfileUser") },
     ]);
@@ -93,9 +107,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginLeft: 30,
     marginRight: 30,
-    
   },
 });
-
 
 export default UpdateUser;
