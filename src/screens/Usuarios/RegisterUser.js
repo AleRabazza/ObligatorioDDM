@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { StyleSheet, View, TextInput, Button, Alert } from "react-native";
+import { StyleSheet, View, TextInput, Button, Alert, Text } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ImagePicker from 'expo-image-picker';
 
 const RegisterUser = ({ navigation }) => {
   const [userName, setUserName] = useState("");
@@ -8,7 +9,7 @@ const RegisterUser = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [age, setAge] = useState("");
   const [neighborhood, setNeighborhood] = useState("");
-  const [profilePicture, setProfilePicture] = useState("");
+  const [profilePicture, setProfilePicture] = useState(null);
 
   const clearData = () => {
     setUserName("");
@@ -18,6 +19,38 @@ const RegisterUser = ({ navigation }) => {
     setNeighborhood("");
     setProfilePicture("");
   };
+
+  const requestPerms = async() =>{
+    const cam = await ImagePicker.requestCameraPermissionsAsync();
+    const gal = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!cam.granted || !gal.granted) {
+      Alert.alert('Permisos requeridos',
+                  'Habilita acceso a la camara y la galeria.');
+      return false;
+    }
+    return true;
+  };
+  
+
+  const pickFromGallery = async () => {
+    if(!(await requestPerms())) return;
+    const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        quality : 1,
+    });
+    if (!result.canceled) setProfilePicture(result.assets[0].uri);
+  };
+
+  const takePhoto = async () => {
+    if(!(await requestPerms())) return;
+    const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        quality: 1,
+    });
+    if (!result.canceled) setProfilePicture(result.assets[0].uri);
+};
+
 
   const registerUser = async () => {
    
@@ -41,11 +74,10 @@ const RegisterUser = ({ navigation }) => {
       Alert.alert("Ingrese su barrio o zona de residencia");
       return;
     }
-    if (!profilePicture.trim()) {
-      Alert.alert("Ingrese una URL para la foto de perfil");
+    if (!profilePicture) {
+      Alert.alert("Seleccione una foto de perfil");
       return;
     }
-
     try {
       const existingUser = await AsyncStorage.getItem(userName);
       if (existingUser) {
@@ -84,7 +116,9 @@ const RegisterUser = ({ navigation }) => {
       <TextInput style={styles.input} placeholder="Correo Electrónico" value={email} onChangeText={setEmail} keyboardType="email-address" />
       <TextInput style={styles.input} placeholder="Edad" value={age} onChangeText={setAge} keyboardType="numeric" />
       <TextInput style={styles.input} placeholder="Barrio o Zona" value={neighborhood} onChangeText={setNeighborhood} />
-      <TextInput style={styles.input} placeholder="Foto de Perfil" value={profilePicture} onChangeText={setProfilePicture} />
+      <Text>Selecciona tu foto de perfil</Text>
+      <Button title="Seleccionar de la Galería" onPress={pickFromGallery} />
+      <Button title="Tomar Foto" onPress={takePhoto} />
       <Button title="Registrar" onPress={registerUser} />
     </View>
   );

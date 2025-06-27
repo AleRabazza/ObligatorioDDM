@@ -1,21 +1,53 @@
 import React, { useState } from "react";
-import { View, TextInput, StyleSheet, Alert, ScrollView, Text } from "react-native";
+import { View, TextInput, StyleSheet, Alert, ScrollView, Text, Button } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ClassicButton from "../../components/ClassicButton";
 import { Picker } from "@react-native-picker/picker";
+import * as ImagePicker from 'expo-image-picker';
 
 const RegisterMateriales = ({ navigation }) => {
-  const [nombre, setNombre] = useState("");
-  const [categoria, setCategoria] = useState("");
-  const [imagen, setImagen] = useState("");
+const [nombre, setNombre] = useState("");
+const [categoria, setCategoria] = useState("");
+const [imagen, setImagen] = useState("");
 
-  const limpiarCampos = () => {
-    setNombre("");
-    setCategoria("");
-    setImagen("");
-  };
+const limpiarCampos = () => {
+  setNombre("");
+  setCategoria("");
+  setImagen("");
+};
 
-  const guardarMaterial = async () => {
+const requestPerms = async() =>{
+  const cam = await ImagePicker.requestCameraPermissionsAsync();
+  const gal = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  if (!cam.granted || !gal.granted) {
+    Alert.alert('Permisos requeridos',
+                'Habilita acceso a la camara y la galeria.');
+    return false;
+  }
+  return true;
+};
+  
+
+const pickFromGallery = async () => {
+  if(!(await requestPerms())) return;
+  const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality : 1,
+  });
+  if (!result.canceled) setImagen(result.assets[0].uri);
+};
+
+const takePhoto = async () => {
+  if(!(await requestPerms())) return;
+  const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      quality: 1,
+  });
+  if (!result.canceled) setImagen(result.assets[0].uri);
+};
+
+const guardarMaterial = async () => {
     if (!nombre.trim()) {
       Alert.alert("Ingrese el nombre del material");
       return;
@@ -80,12 +112,9 @@ const RegisterMateriales = ({ navigation }) => {
         </Picker>
       </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="URL de imagen de ejemplo"
-        value={imagen}
-        onChangeText={setImagen}
-      />
+      <Text>Selecciona tu foto de perfil</Text>
+      <Button title="Seleccionar de la Galería" onPress={pickFromGallery} />
+      <Button title="Tomar Foto" onPress={takePhoto} />
 
       <ClassicButton title="Guardar material" customPress={guardarMaterial} />
       <ClassicButton title="Cancelar" customPress={() => navigation.goBack()} />
