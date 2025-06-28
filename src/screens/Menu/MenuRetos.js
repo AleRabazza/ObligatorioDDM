@@ -1,12 +1,19 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import MyButton from '../../components/MyButton';
 
-const MenuRetos = () => {
+
+const MenuRetos = ({navigation}) => {
+
   return (
     <View style={styles.container}>
-       <MyButton title="AgregarRetos" btnColor="blue" btnIcon="user-plus" customPress={() => navigation.navigate("Opcion1")} />
+       <MyButton title="Agregar Retos" btnColor="blue" btnIcon="user-plus" customPress={() => navigation.navigate("RegisterRetos")} />
 
-      <MyButton title="Listar Retos" btnColor="blue" btnIcon="user-plus"  customPress={() => navigation.navigate("Opcion2")} />
+      <MyButton title="Listar Retos" btnColor="blue" btnIcon="user-plus"  customPress={() => navigation.navigate("ViewAllRetos")} />
+
+      <MyButton title="Mis Retos" btnColor="blue" btnIcon="user-plus" customPress={() => navigation.navigate("ViewRetos")} />
+
+      <MyButton title="Mis Solicitudes de Reto" btnColor="blue" btnIcon="user-plus" customPress={() => navigation.navigate("MisSolicitudes")} />
     </View>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, View, TextInput, Button, Alert, Text } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
+import * as Localation from 'expo-location';
 
 const RegisterUser = ({ navigation }) => {
   const [userName, setUserName] = useState("");

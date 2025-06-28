@@ -17,6 +17,13 @@ import UpdateUser from "../screens/Usuarios/UpdateUser";
 import RegisterMateriales from "../screens/Materiales/RegisterMateriales";
 import ViewAllMateriales from "../screens/Materiales/ViewAllMateriales";
 import UpdateMateriales from "../screens/Materiales/UpdateMateriales";
+import RegisterRetos from "../screens/Retos/RegisterRetos";
+import ViewAllRetos from "../screens/Retos/ViewAllRetos";
+import UpdateReto from "../screens/Retos/UpdateReto";
+import ViewRetos from "../screens/Retos/ViewRetos";
+import SolicitudesDelReto from "../screens/Retos/SolicitudesDelReto";
+import RegisterParticipacion from "../screens/Participaciones/RegisterParticipacion";
+import MisSolicitudes from "../screens/Retos/MisSolicitudes";
 
 const Stack = createStackNavigator();
 
@@ -29,6 +36,7 @@ const RootStack = () => {
         <Stack.Screen name="MenuRetos" component={MenuRetos} options={{ title: "Menú Retos" }} />
         <Stack.Screen name="MenuMateriales" component={MenuMateriales} options={{ title: "Menú Materiales" }} />
         <Stack.Screen name="MenuUsuario" component={MenuUsuario} options={{ title: "Menú Usuario" }} />
+
         {/* Rutas del menú de usuario */}
        <Stack.Screen name="MenuInicio" component={MenuInicio} options={{ title: "Inicio" }} />
         <Stack.Screen name="RegisterUser" component={RegisterUser} options={{ title: "Registrar Usuario" }} />
@@ -36,15 +44,23 @@ const RootStack = () => {
         <Stack.Screen name="ProfileUser" component={ProfileUser} options={{ title: "Perfil de Usuario" }} />
         <Stack.Screen name="ViewAllUser" component={ViewAllUser} options={{ title: "Ver Todos los Usuarios" }} />
         <Stack.Screen name="UpdateUser" component={UpdateUser} options={{ title: "Actualizar Usuario" }} />
+
         {/* Rutas del menú de materiales */}
         <Stack.Screen name="RegisterMateriales" component={RegisterMateriales} options={{ title: "Registrar Materiales" }} />
         <Stack.Screen name="ViewAllMateriales" component={ViewAllMateriales} options={{ title: "Ver Todos los Materiales" }} />
         <Stack.Screen name="UpdateMateriales" component={UpdateMateriales} options={{ title: "Actualizar Materiales" }} />
 
-
         {/* Rutas del menú de Reto */}
+        <Stack.Screen name = "RegisterRetos" component={RegisterRetos} options={{ title: "Registrar Retos" }} />
+        <Stack.Screen name = "ViewAllRetos" component={ViewAllRetos} options={{ title: "Ver Todos los Retos" }} />
+        <Stack.Screen name = "UpdateReto" component={UpdateReto} options={{ title: "Actualizar Retos" }} />
+        <Stack.Screen name = "ViewRetos" component={ViewRetos} options={{ title: "Mis Retos" }} />
+        <Stack.Screen name = "SolicitudesDelReto" component={SolicitudesDelReto} options={{ title: "Solicitudes del Reto" }} />
+        <Stack.Screen name = "MisSolicitudes" component={MisSolicitudes} options={{ title: "Mis Solicitudes" }} />
 
-
+        {/* Otras pantallas */}
+        <Stack.Screen name="RegisterParticipacion" component={RegisterParticipacion} options={{ title: "Registrar Participación" }} />
+        
       </Stack.Navigator>
     </NavigationContainer>
   );
