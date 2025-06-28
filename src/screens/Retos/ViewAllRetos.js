@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  TextInput,
-  Button,
-  Alert,
-  Keyboard,
-  TouchableWithoutFeedback
-} from 'react-native';
+import {View,Text,FlatList, StyleSheet, TextInput,Button,Keyboard,TouchableWithoutFeedback} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 
