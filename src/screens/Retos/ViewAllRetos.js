@@ -1,10 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Button, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  TextInput,
+  Button,
+  Alert,
+  Keyboard,
+  TouchableWithoutFeedback
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Picker } from '@react-native-picker/picker';
 
 const ViewAllRetos = ({ navigation }) => {
   const [retos, setRetos] = useState([]);
+  const [retosFiltrados, setRetosFiltrados] = useState([]);
   const [usuarioLogueado, setUsuarioLogueado] = useState('');
+  const [busqueda, setBusqueda] = useState('');
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('');
+  const [categorias, setCategorias] = useState([]);
 
   useEffect(() => {
     const cargarRetos = async () => {
@@ -14,21 +29,36 @@ const ViewAllRetos = ({ navigation }) => {
       const data = await AsyncStorage.getItem('retos');
       if (data) {
         const todosLosRetos = JSON.parse(data);
-        const otrosRetos = todosLosRetos.filter(
-          reto => reto.usuarioCreador !== user
-        );
+        const otrosRetos = todosLosRetos.filter(reto => reto.usuarioCreador !== user);
         setRetos(otrosRetos);
+        setRetosFiltrados(otrosRetos);
+
+        const categoriasUnicas = [...new Set(otrosRetos.map(r => r.categoria))];
+        setCategorias(categoriasUnicas);
       }
     };
 
     cargarRetos();
   }, []);
 
-  const participarEnReto = (reto) => {
-    Alert.alert(
-      "Participación",
-      `Solicitaste participar en el reto: "${reto.nombreReto}"`
-    );
+  useEffect(() => {
+    filtrarRetos();
+  }, [busqueda, categoriaSeleccionada]);
+
+  const filtrarRetos = () => {
+    let nuevos = [...retos];
+
+    if (busqueda.trim() !== '') {
+      nuevos = nuevos.filter(r =>
+        r.nombreReto.toLowerCase().includes(busqueda.trim().toLowerCase())
+      );
+    }
+
+    if (categoriaSeleccionada !== '') {
+      nuevos = nuevos.filter(r => r.categoria === categoriaSeleccionada);
+    }
+
+    setRetosFiltrados(nuevos);
   };
 
   const renderItem = ({ item }) => (
@@ -39,25 +69,48 @@ const ViewAllRetos = ({ navigation }) => {
       <Text>Puntaje: {item.puntaje}</Text>
       <Text>Creado por: {item.usuarioCreador}</Text>
       <View style={styles.boton}>
-       <Button
-        title="Participar" onPress={() => navigation.navigate("RegisterParticipacion", { reto: item })}/>
+        <Button
+          title="Participar"
+          onPress={() => navigation.navigate("RegisterParticipacion", { reto: item })}
+        />
       </View>
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Retos de Otros Usuarios</Text>
-      {retos.length === 0 ? (
-        <Text style={styles.aviso}>No hay retos disponibles de otros usuarios.</Text>
-      ) : (
-        <FlatList
-          data={retos}
-          keyExtractor={(item, index) => `${item.nombreReto}-${index}`}
-          renderItem={renderItem}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <Text style={styles.header}>Retos de Otros Usuarios</Text>
+
+        <TextInput
+          placeholder="Buscar por nombre del reto..."
+          value={busqueda}
+          onChangeText={setBusqueda}
+          style={styles.input}
         />
-      )}
-    </View>
+
+        <Picker
+          selectedValue={categoriaSeleccionada}
+          onValueChange={(itemValue) => setCategoriaSeleccionada(itemValue)}
+          style={styles.picker}
+        >
+          <Picker.Item label="Todas las categorías" value="" />
+          {categorias.map((cat, index) => (
+            <Picker.Item key={index} label={cat} value={cat} />
+          ))}
+        </Picker>
+
+        {retosFiltrados.length === 0 ? (
+          <Text style={styles.aviso}>No hay retos que coincidan con los filtros.</Text>
+        ) : (
+          <FlatList
+            data={retosFiltrados}
+            keyExtractor={(item, index) => `${item.nombreReto}-${index}`}
+            renderItem={renderItem}
+          />
+        )}
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -71,6 +124,18 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 12,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 10,
+  },
+  picker: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    marginBottom: 10,
   },
   aviso: {
     fontSize: 16,
