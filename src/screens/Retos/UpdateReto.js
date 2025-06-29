@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { View,TextInput, StyleSheet,Button, Alert, Text, KeyboardAvoidingView, ScrollView, Platform, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import {
+  View, TextInput, StyleSheet, Button, Alert, Text,
+  KeyboardAvoidingView, ScrollView, Platform,
+  TouchableOpacity, TouchableWithoutFeedback, Keyboard
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
-import DateTimePicker from '@react-native-community/datetimepicker'; 
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const UpdateReto = ({ route, navigation }) => {
   const { reto } = route.params;
 
   const [nombreReto, setNombreReto] = useState(reto.nombreReto);
   const [descripcion, setDescripcion] = useState(reto.descripcion);
-  const [materialSeleccionado, setMaterialSeleccionado] = useState(reto.categoria); 
-  const [fechaLimite, setFechaLimite] = useState(new Date(reto.fechaLimite)); 
+  const [materialSeleccionado, setMaterialSeleccionado] = useState(reto.categoria);
+  const [fechaLimite, setFechaLimite] = useState(new Date(reto.fechaLimite));
   const [puntaje, setPuntaje] = useState(reto.puntaje);
-  const [usuarioCreador, setUsuarioCreador] = useState(reto.usuarioCreador);
-  const [materialesDisponibles, setMaterialesDisponibles] = useState([]); 
-  const [showDatePicker, setShowDatePicker] = useState(false); 
+  const [usuarioCreador] = useState(reto.usuarioCreador);
+  const [materialesDisponibles, setMaterialesDisponibles] = useState([]);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   useEffect(() => {
     const cargarMateriales = async () => {
@@ -24,19 +28,17 @@ const UpdateReto = ({ route, navigation }) => {
       const nombres = materiales.map(([_, value]) => {
         try {
           const parsed = JSON.parse(value);
-          return parsed.nombre; 
+          return parsed.nombre;
         } catch {
           return null;
         }
-      }).filter(n => n); 
-
+      }).filter(n => n);
       setMaterialesDisponibles(nombres);
     };
 
     cargarMateriales();
   }, []);
 
- 
   const formatDateLocal = (date) => {
     const d = new Date(date);
     const year = d.getFullYear();
@@ -50,14 +52,13 @@ const UpdateReto = ({ route, navigation }) => {
       nombreReto === reto.nombreReto &&
       descripcion === reto.descripcion &&
       materialSeleccionado === reto.categoria &&
-      fechaLimite === reto.fechaLimite &&
-      puntaje === reto.puntaje
+      fechaLimite.toDateString() === new Date(reto.fechaLimite).toDateString()
     ) {
       Alert.alert("Sin cambios", "No se realizaron modificaciones al reto.");
       return;
     }
 
-    if (!nombreReto.trim() || !descripcion.trim() || !materialSeleccionado.trim() || !fechaLimite || !puntaje.trim()) {
+    if (!nombreReto.trim() || !descripcion.trim() || !materialSeleccionado.trim() || !fechaLimite) {
       Alert.alert("Todos los campos son obligatorios");
       return;
     }
@@ -76,8 +77,8 @@ const UpdateReto = ({ route, navigation }) => {
           nombreReto,
           descripcion,
           categoria: materialSeleccionado,
-          fechaLimite: formatDateLocal(fechaLimite), 
-          puntaje,
+          fechaLimite: formatDateLocal(fechaLimite),
+          puntaje, // el valor se mantiene, no se edita
           usuarioCreador,
         };
 
@@ -94,15 +95,11 @@ const UpdateReto = ({ route, navigation }) => {
     }
   };
 
-  const showDatepicker = () => {
-    setShowDatePicker(true); 
-  };
+  const showDatepicker = () => setShowDatePicker(true);
 
   const onChangeDate = (event, selectedDate) => {
-    setShowDatePicker(false); 
-    if (selectedDate) {
-      setFechaLimite(selectedDate);
-    }
+    setShowDatePicker(false);
+    if (selectedDate) setFechaLimite(selectedDate);
   };
 
   return (
@@ -120,6 +117,7 @@ const UpdateReto = ({ route, navigation }) => {
             value={nombreReto}
             onChangeText={setNombreReto}
           />
+
           <TextInput
             style={styles.input}
             placeholder="Descripción"
@@ -143,32 +141,11 @@ const UpdateReto = ({ route, navigation }) => {
           </View>
 
           <Text style={styles.label}>Fecha Límite:</Text>
-<TouchableOpacity onPress={showDatepicker} style={styles.fechaInput}>
-  <Text style={styles.fechaText}>
-    {formatDateLocal(fechaLimite)}
-  </Text>
-</TouchableOpacity>
-
-{showDatePicker && (
-  <DateTimePicker
-    value={fechaLimite || new Date()}
-    mode="date"
-    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-    onChange={onChangeDate}
-    minimumDate={new Date()} // ✅ Solo fechas futuras o actuales
-  />
-)}
-
-          {showDatePicker && (
-  <DateTimePicker
-    value={fechaLimite || new Date()}
-    mode="date"
-    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-    onChange={onChangeDate}
-    minimumDate={new Date()} // Permite solo hoy o fechas futuras
-  />
-)}
-
+          <TouchableOpacity onPress={showDatepicker} style={styles.fechaInput}>
+            <Text style={styles.fechaText}>
+              {formatDateLocal(fechaLimite)}
+            </Text>
+          </TouchableOpacity>
 
           {showDatePicker && (
             <DateTimePicker
@@ -180,13 +157,11 @@ const UpdateReto = ({ route, navigation }) => {
             />
           )}
 
-          <TextInput
-            style={styles.input}
-            placeholder="Puntaje asignado"
-            value={puntaje}
-            onChangeText={setPuntaje}
-            keyboardType="numeric"
-          />
+          {/* Puntaje visible pero no editable */}
+          <View style={styles.pickerContainer}>
+            <Text style={styles.label}>Puntaje asignado:</Text>
+            <Text style={styles.puntajeTexto}>{puntaje} puntos</Text>
+          </View>
 
           <View style={styles.buttonContainer}>
             <Button title="Guardar Cambios" onPress={actualizarReto} />
@@ -240,6 +215,13 @@ const styles = StyleSheet.create({
   },
   fechaText: {
     fontSize: 16,
+    color: '#333',
+  },
+  puntajeTexto: {
+    fontSize: 16,
+    backgroundColor: '#eee',
+    padding: 10,
+    borderRadius: 4,
     color: '#333',
   },
   buttonContainer: {

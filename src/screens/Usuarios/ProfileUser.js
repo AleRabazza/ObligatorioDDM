@@ -1,23 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { View, Text, Alert, StyleSheet, ScrollView, Image } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ClassicButton from "../../components/ClassicButton"; 
+import ClassicButton from "../../components/ClassicButton";
+import { useFocusEffect } from "@react-navigation/native";
+ 
 
 const ProfileUser = ({ navigation }) => {
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const loadUser = async () => {
-      const userName = await AsyncStorage.getItem("usuario_logueado");
-      if (userName) {
-        const userData = await AsyncStorage.getItem(userName);
-        if (userData) {
-          setUser(JSON.parse(userData));
+  useFocusEffect(
+    useCallback(() => {
+      const loadUser = async () => {
+        const userName = await AsyncStorage.getItem("usuario_logueado");
+        if (userName) {
+          const userData = await AsyncStorage.getItem(userName);
+          if (userData) {
+            setUser(JSON.parse(userData));
+          }
         }
-      }
-    };
-    loadUser();
-  }, []);
+      };
+      loadUser();
+    }, [])
+  );
 
   const logout = async () => {
     await AsyncStorage.removeItem("usuario_logueado");
@@ -39,21 +43,62 @@ const ProfileUser = ({ navigation }) => {
     ]);
   };
 
+  const calcularNivel = (puntos) => {
+    if (puntos < 100) return 1;
+    if (puntos < 1000) return Math.floor(puntos / 100) + 1;
+    return 10 + Math.floor((puntos - 1000) / 500) + 1;
+  };
+
+  const mensajePorNivel = (nivel) => {
+    if (nivel <= 1) return "¡Recién comienzas, seguí así!";
+    if (nivel <= 3) return "¡Buen comienzo! Vas por buen camino.";
+    if (nivel <= 5) return "¡Ya sos un participante activo!";
+    if (nivel <= 7) return "¡Impresionante compromiso!";
+    if (nivel <= 9) return "¡Estás muy cerca del top!";
+    if (nivel === 10) return "¡Nivel 10! ¡Sos un verdadero crack!";
+    return "¡Leyenda del reciclaje urbano!";
+  };
+
   if (!user) return null;
+
+  const puntos = parseInt(user.puntos) || 0;
+  const nivel = calcularNivel(puntos);
+  const mensaje = mensajePorNivel(nivel);
+
+  // === Barra de progreso ===
+  const puntosTotalesNivel = nivel < 10 ? 100 : 500;
+  const puntosCompletados = nivel < 10 ? puntos % 100 : (puntos - 1000) % 500;
+  const puntosRestantes = puntosTotalesNivel - puntosCompletados;
+  const progreso = (puntosCompletados / puntosTotalesNivel) * 100;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Perfil de Usuario</Text>
+
       {user.profilePicture ? (
         <Image source={{ uri: user.profilePicture }} style={styles.image} />
       ) : (
         <Text style={styles.text}>Sin foto de perfil</Text>
       )}
+
       <Text style={styles.text}>Usuario: {user.userName}</Text>
       <Text style={styles.text}>Correo: {user.email}</Text>
       <Text style={styles.text}>Edad: {user.age}</Text>
       <Text style={styles.text}>Barrio: {user.neighborhood}</Text>
+      <Text style={styles.text}>Puntos acumulados: {puntos}</Text>
+      <Text style={[styles.text, styles.nivel]}>Nivel actual: {nivel}</Text>
+      <Text style={styles.mensaje}>{mensaje}</Text>
 
+      {/* Barra de progreso */}
+      <View style={styles.progressContainer}>
+        <Text style={styles.text}>Progreso al próximo nivel: {Math.floor(progreso)}%</Text>
+        <View style={styles.progressBar}>
+          <View style={[styles.progressFill, { width: `${progreso}%` }]} />
+        </View>
+        <Text style={styles.text}>Faltan {puntosRestantes} puntos para subir de nivel!</Text>
+      </View>
+
+      {/* Botones */}
       <ClassicButton
         title="Editar"
         customPress={() => navigation.navigate("UpdateUser", { user })}
@@ -68,6 +113,7 @@ const ProfileUser = ({ navigation }) => {
         customPress={logout}
         btnColor="gray"
       />
+
     </ScrollView>
   );
 };
@@ -85,11 +131,40 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
   },
+  nivel: {
+    fontWeight: "bold",
+    color: "#2a9d8f",
+    fontSize: 18,
+  },
+  mensaje: {
+    fontStyle: "italic",
+    fontSize: 16,
+    color: "#444",
+    marginBottom: 20,
+    textAlign: "center",
+  },
   image: {
     width: 120,
     height: 120,
     borderRadius: 60,
     marginBottom: 16,
+  },
+  progressContainer: {
+    width: '100%',
+    marginBottom: 20,
+  },
+  progressBar: {
+    width: '100%',
+    height: 20,
+    backgroundColor: '#eee',
+    borderRadius: 10,
+    overflow: 'hidden',
+    marginTop: 4,
+    marginBottom: 8,
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: '#2a9d8f',
   },
 });
 

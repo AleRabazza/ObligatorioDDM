@@ -21,40 +21,53 @@ const VerSolicitudesDelReto = ({ route }) => {
     cargarParticipaciones();
   }, []);
 
-  const actualizarEstado = async (participacion, nuevoEstado) => {
-    const data = await AsyncStorage.getItem('participaciones');
-    const participacionesArray = data ? JSON.parse(data) : [];
+ const actualizarEstado = async (participacion, nuevoEstado) => {
+  const data = await AsyncStorage.getItem('participaciones');
+  const participacionesArray = data ? JSON.parse(data) : [];
 
-    const index = participacionesArray.findIndex(p =>
-      p.nombreReto === participacion.nombreReto &&
-      p.usuarioParticipante === participacion.usuarioParticipante
-    );
+  const index = participacionesArray.findIndex(p =>
+    p.nombreReto === participacion.nombreReto &&
+    p.usuarioParticipante === participacion.usuarioParticipante
+  );
 
-    if (index !== -1) {
-      participacionesArray[index].estado = nuevoEstado;
-      await AsyncStorage.setItem('participaciones', JSON.stringify(participacionesArray));
-      setParticipaciones(prev => prev.filter(p => p !== participacion));
+  if (index !== -1) {
+    participacionesArray[index].estado = nuevoEstado;
+    await AsyncStorage.setItem('participaciones', JSON.stringify(participacionesArray));
+    setParticipaciones(prev => prev.filter(p => p !== participacion));
 
-      if (nuevoEstado === 'Aprobado') {
-        await sumarPuntos(participacion.usuarioParticipante, participacion.puntaje);
+    if (nuevoEstado === 'Aprobado') {
+    
+      const retosData = await AsyncStorage.getItem('retos');
+      const retosArray = retosData ? JSON.parse(retosData) : [];
+      const retoAsociado = retosArray.find(r => r.nombreReto === participacion.nombreReto);
+
+      if (retoAsociado && retoAsociado.puntaje) {
+        const puntos = parseInt(retoAsociado.puntaje);
+        await sumarPuntos(participacion.usuarioParticipante, puntos);
       }
-
-      Alert.alert("Éxito", `Participación ${nuevoEstado.toLowerCase()} correctamente`);
     }
-  };
 
-  const sumarPuntos = async (usuario, puntosASumar) => {
-    const datos = await AsyncStorage.getItem(`usuario_${usuario}`);
+    Alert.alert("Éxito", `Participación ${nuevoEstado.toLowerCase()} correctamente`);
+  }
+};
+
+const sumarPuntos = async (usuario, puntosASumar) => {
+  try {
+    const datos = await AsyncStorage.getItem(usuario); // usuario = userName
     if (datos) {
       const user = JSON.parse(datos);
       const puntosActuales = parseInt(user.puntos || '0');
-      const nuevosPuntos = puntosActuales + parseInt(puntosASumar);
+      const nuevosPuntos = puntosActuales + puntosASumar;
 
       user.puntos = nuevosPuntos;
 
-      await AsyncStorage.setItem(`usuario_${usuario}`, JSON.stringify(user));
+      await AsyncStorage.setItem(usuario, JSON.stringify(user));
     }
-  };
+  } catch (error) {
+    console.error("Error al sumar puntos:", error);
+  }
+};
+
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>

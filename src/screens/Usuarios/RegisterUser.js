@@ -86,17 +86,20 @@ const RegisterUser = ({ navigation }) => {
         return;
       }
 
-      const newUser = {
+            const newUser = {
         userName,
         password,
         email,
         age,
         neighborhood,
         profilePicture,
+        puntos: 0
       };
 
+
       await AsyncStorage.setItem(userName, JSON.stringify(newUser));
-      await AsyncStorage.setItem("usuario_logueado", userName); 
+      await AsyncStorage.setItem("usuario_logueado", userName);
+
       clearData();
       Alert.alert("Éxito", "Usuario registrado correctamente", [
         {

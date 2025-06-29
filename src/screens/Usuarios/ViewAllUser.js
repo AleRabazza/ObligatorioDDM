@@ -9,9 +9,10 @@ const ViewAllUser = () => {
     try {
       const allUsers = [];
       const keys = await AsyncStorage.getAllKeys();
+      const userLogueado = await AsyncStorage.getItem("usuario_logueado");
 
       for (const key of keys) {
-        if (key !== "usuario_logueado") {
+        if (key !== "usuario_logueado" && key !== userLogueado) {
           const user = await AsyncStorage.getItem(key);
           if (user) {
             allUsers.push(JSON.parse(user));
@@ -51,7 +52,7 @@ const ViewAllUser = () => {
         data={usuarios}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
-        ListEmptyComponent={<Text style={styles.empty}>No hay usuarios registrados.</Text>}
+        ListEmptyComponent={<Text style={styles.empty}>No hay otros usuarios registrados.</Text>}
       />
     </SafeAreaView>
   );

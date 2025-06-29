@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View, TextInput, Button, StyleSheet, Alert, Text,
-  ScrollView, KeyboardAvoidingView, Platform,
-  TouchableWithoutFeedback, Keyboard, TouchableOpacity
-} from 'react-native';
+import { View, TextInput, Button, StyleSheet, Alert, Text, ScrollView, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -160,17 +156,24 @@ const RegisterRetos = ({ navigation }) => {
             />
           )}
 
-          <TextInput
-            style={styles.input}
-            placeholder="Puntaje asignado"
-            value={puntaje}
-            onChangeText={setPuntaje}
-            keyboardType="numeric"
-          />
+        <View style={styles.pickerContainer}>
+            <Text style={styles.label}>Puntaje asignado:</Text>
+            <Picker
+              selectedValue={puntaje}
+              onValueChange={setPuntaje}
+              style={styles.picker}
+            >
+              <Picker.Item label="Seleccione un puntaje" value="" />
+              <Picker.Item label="20 puntos" value="20" />
+              <Picker.Item label="45 puntos" value="45" />
+              <Picker.Item label="75 puntos" value="75" />
+            </Picker>
+          </View>
 
           <View style={{ marginTop: 20 }}>
             <Button title="Registrar Reto" onPress={registrarReto} />
           </View>
+
         </ScrollView>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
