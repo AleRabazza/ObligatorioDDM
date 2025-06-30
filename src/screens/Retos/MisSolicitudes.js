@@ -124,7 +124,7 @@ const MisSolicitudes = ({ navigation }) => {
       </View>
 
       {solicitudesMostradas.length === 0 ? (
-        <Text style={styles.aviso}>No tienes solicitudes en este estado.</Text>
+        <Text style={styles.aviso}>No tienes solicitudes</Text>
       ) : (
         <FlatList
           data={solicitudesMostradas}
