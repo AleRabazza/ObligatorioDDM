@@ -14,6 +14,8 @@ const MenuRetos = ({navigation}) => {
       <MyButton title="Mis Retos" btnColor="blue" btnIcon="user-plus" customPress={() => navigation.navigate("ViewRetos")} />
 
       <MyButton title="Mis Solicitudes de Reto" btnColor="blue" btnIcon="user-plus" customPress={() => navigation.navigate("MisSolicitudes")} />
+
+                <MyButton title="Volver al menu principal" btnColor="blue" btnIcon="home" customPress={() => navigation.navigate("MenuGlobal")} />
     </View>
   );
 };

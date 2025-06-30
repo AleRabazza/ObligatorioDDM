@@ -8,6 +8,7 @@ const MenuUsuario = ({ navigation }) => {
       <ScrollView>
         <MyButton title="Listar Usuarios" btnColor="blue" btnIcon="user-plus" customPress={() => navigation.navigate("ViewAllUser")} />
         <MyButton title="Ver Mi Usuario" btnColor="blue" btnIcon="user-plus" customPress={() => navigation.navigate("ProfileUser")} />
+        <MyButton title="Volver al menu principal" btnColor="blue" btnIcon="home" customPress={() => navigation.navigate("MenuGlobal")} />
       </ScrollView>
     </SafeAreaView>
   );
