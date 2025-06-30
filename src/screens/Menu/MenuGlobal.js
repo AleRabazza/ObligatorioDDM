@@ -12,6 +12,7 @@ const MenuGlobal = ({ navigation }) => {
         <MyButton title="Retos" btnColor="blue" btnIcon="bullseye" customPress={() => navigation.navigate("MenuRetos")} /> 
         <MyButton title="Materiales" btnColor="blue" btnIcon="cubes" customPress={() => navigation.navigate("MenuMateriales")} /> 
         <MyButton title="Usuario" btnColor="blue" btnIcon="user-circle" customPress={() => navigation.navigate("MenuUsuario")} />
+        <MyButton title="Estadísticas" btnColor="blue" btnIcon="bar-chart" customPress={() => navigation.navigate("EstadisticasUsuario")} />
       </ScrollView>
     </SafeAreaView>
   );
