@@ -1,11 +1,45 @@
 import React, { useState } from "react";
-import { View, TextInput, Alert, StyleSheet, ScrollView } from "react-native";
+import { View, TextInput, Alert, StyleSheet, ScrollView, Image, Button } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ClassicButton from "../../components/ClassicButton"; 
+import * as ImagePicker from 'expo-image-picker';
+import ClassicButton from "../../components/ClassicButton";
 
 const UpdateUser = ({ route, navigation }) => {
   const { user } = route.params;
   const [newUser, setNewUser] = useState({ ...user });
+
+  const requestPerms = async () => {
+    const cam = await ImagePicker.requestCameraPermissionsAsync();
+    const gal = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!cam.granted || !gal.granted) {
+      Alert.alert('Permisos requeridos', 'Habilita acceso a la cámara y la galería.');
+      return false;
+    }
+    return true;
+  };
+
+  const pickFromGallery = async () => {
+    if (!(await requestPerms())) return;
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setNewUser({ ...newUser, profilePicture: result.assets[0].uri });
+    }
+  };
+
+  const takePhoto = async () => {
+    if (!(await requestPerms())) return;
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setNewUser({ ...newUser, profilePicture: result.assets[0].uri });
+    }
+  };
 
   const handleSave = async () => {
     for (let key in newUser) {
@@ -28,11 +62,9 @@ const UpdateUser = ({ route, navigation }) => {
       }
     }
 
-    
     await AsyncStorage.setItem(newUser.userName, JSON.stringify(newUser));
     await AsyncStorage.setItem("usuario_logueado", newUser.userName);
 
-   
     if (newUser.userName !== user.userName) {
       await AsyncStorage.removeItem(user.userName);
     }
@@ -69,12 +101,19 @@ const UpdateUser = ({ route, navigation }) => {
         onChangeText={(text) => setNewUser({ ...newUser, neighborhood: text })}
         placeholder="Barrio"
       />
-      <TextInput
-        style={styles.input}
-        value={newUser.profilePicture}
-        onChangeText={(text) => setNewUser({ ...newUser, profilePicture: text })}
-        placeholder="Foto perfil"
-      />
+
+      {/* Mostrar imagen actual */}
+      {newUser.profilePicture ? (
+        <Image
+          source={{ uri: newUser.profilePicture }}
+          style={styles.profileImage}
+        />
+      ) : null}
+
+      {/* Botones para seleccionar o tomar nueva foto */}
+      <Button title="Seleccionar foto de galería" onPress={pickFromGallery} />
+      <Button title="Tomar una foto nueva" onPress={takePhoto} />
+
       <ClassicButton title="Guardar cambios" customPress={handleSave} />
       <ClassicButton title="Cancelar" customPress={() => navigation.goBack()} />
     </ScrollView>
@@ -85,7 +124,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     flexGrow: 1,
-    alignItems: "center",  
+    alignItems: "center",
   },
   input: {
     height: 40,
@@ -94,19 +133,13 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     marginBottom: 12,
     paddingLeft: 8,
-    width: '90%', 
+    width: '90%',
   },
-  button: {
-    paddingVertical: 10,        
-    paddingHorizontal: 20,      
-    marginVertical: 10,
-    backgroundColor: "black",
-    color: "white",
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    marginLeft: 30,
-    marginRight: 30,
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginVertical: 20,
   },
 });
 
