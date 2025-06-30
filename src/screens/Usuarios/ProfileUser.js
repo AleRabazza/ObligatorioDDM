@@ -1,13 +1,22 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { View, Text, Alert, StyleSheet, ScrollView, Image } from "react-native";
+import { View, Text, Alert, StyleSheet, ScrollView, Image, Button } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ClassicButton from "../../components/ClassicButton";
 import { useFocusEffect } from "@react-navigation/native";
- 
+
 
 const ProfileUser = ({ navigation }) => {
   const [user, setUser] = useState(null);
 
+  const clearAll = async () => {
+    try {
+      await AsyncStorage.clear();
+      Alert.alert('Éxito', 'Todo el AsyncStorage ha sido borrado');
+    } catch (error) {
+      console.error('Error al borrar el AsyncStorage', error);
+      Alert.alert('Error', 'Hubo un problema al borrar los datos');
+    } 
+  };
   useFocusEffect(
     useCallback(() => {
       const loadUser = async () => {
@@ -97,7 +106,9 @@ const ProfileUser = ({ navigation }) => {
         </View>
         <Text style={styles.text}>Faltan {puntosRestantes} puntos para subir de nivel!</Text>
       </View>
-
+        <View style={styles.container}>
+      <Button title="Borrar Todo el AsyncStorage" onPress={clearAll} />
+    </View> 
       {/* Botones */}
       <ClassicButton
         title="Editar"

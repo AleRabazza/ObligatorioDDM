@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { StyleSheet, View, TextInput, Button, Alert, Text } from "react-native";
+import { StyleSheet, View, TextInput, Button, Alert, Text, Image } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
-import * as Localation from 'expo-location';
 
 const RegisterUser = ({ navigation }) => {
   const [userName, setUserName] = useState("");
@@ -18,43 +17,39 @@ const RegisterUser = ({ navigation }) => {
     setEmail("");
     setAge("");
     setNeighborhood("");
-    setProfilePicture("");
+    setProfilePicture(null);
   };
 
-  const requestPerms = async() =>{
+  const requestPerms = async () => {
     const cam = await ImagePicker.requestCameraPermissionsAsync();
     const gal = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!cam.granted || !gal.granted) {
-      Alert.alert('Permisos requeridos',
-                  'Habilita acceso a la camara y la galeria.');
+      Alert.alert('Permisos requeridos', 'Habilita acceso a la cámara y la galería.');
       return false;
     }
     return true;
   };
-  
 
   const pickFromGallery = async () => {
-    if(!(await requestPerms())) return;
+    if (!(await requestPerms())) return;
     const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        allowsEditing: true,
-        quality : 1,
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
     });
     if (!result.canceled) setProfilePicture(result.assets[0].uri);
   };
 
   const takePhoto = async () => {
-    if(!(await requestPerms())) return;
+    if (!(await requestPerms())) return;
     const result = await ImagePicker.launchCameraAsync({
-        allowsEditing: true,
-        quality: 1,
+      allowsEditing: true,
+      quality: 1,
     });
     if (!result.canceled) setProfilePicture(result.assets[0].uri);
-};
-
+  };
 
   const registerUser = async () => {
-   
     if (!userName.trim()) {
       Alert.alert("Ingrese su nombre de usuario");
       return;
@@ -79,6 +74,7 @@ const RegisterUser = ({ navigation }) => {
       Alert.alert("Seleccione una foto de perfil");
       return;
     }
+
     try {
       const existingUser = await AsyncStorage.getItem(userName);
       if (existingUser) {
@@ -86,16 +82,15 @@ const RegisterUser = ({ navigation }) => {
         return;
       }
 
-            const newUser = {
+      const newUser = {
         userName,
         password,
         email,
         age,
         neighborhood,
         profilePicture,
-        puntos: 0
+        puntos: 0,
       };
-
 
       await AsyncStorage.setItem(userName, JSON.stringify(newUser));
       await AsyncStorage.setItem("usuario_logueado", userName);
@@ -115,15 +110,58 @@ const RegisterUser = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <TextInput style={styles.input} placeholder="Nombre de Usuario" value={userName} onChangeText={setUserName} />
-      <TextInput style={styles.input} placeholder="Contraseña" secureTextEntry value={password} onChangeText={setPassword} />
-      <TextInput style={styles.input} placeholder="Correo Electrónico" value={email} onChangeText={setEmail} keyboardType="email-address" />
-      <TextInput style={styles.input} placeholder="Edad" value={age} onChangeText={setAge} keyboardType="numeric" />
-      <TextInput style={styles.input} placeholder="Barrio o Zona" value={neighborhood} onChangeText={setNeighborhood} />
-      <Text>Selecciona tu foto de perfil</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Nombre de Usuario"
+        value={userName}
+        onChangeText={setUserName}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Contraseña"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Correo Electrónico"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Edad"
+        value={age}
+        onChangeText={setAge}
+        keyboardType="numeric"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Barrio o Zona"
+        value={neighborhood}
+        onChangeText={setNeighborhood}
+      />
+      <Text style={{ marginBottom: 8 }}>Selecciona tu foto de perfil</Text>
       <Button title="Seleccionar de la Galería" onPress={pickFromGallery} />
       <Button title="Tomar Foto" onPress={takePhoto} />
-      <Button title="Registrar" onPress={registerUser} />
+
+      {/* Mostrar la imagen seleccionada o tomada */}
+      {profilePicture && (
+        <Image
+          source={{ uri: profilePicture }}
+          style={styles.profileImage}
+        />
+      )}
+
+      <View style={{ marginTop: 20 }}>
+        <Button title="Registrar" onPress={registerUser} />
+      </View>
+
+      <View style={{ marginTop: 10 }}>
+        <Button title="Cancelar" color="red" onPress={() => navigation.goBack()} />
+      </View>
     </View>
   );
 };
@@ -141,6 +179,13 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     marginBottom: 12,
     paddingLeft: 8,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginVertical: 20,
+    alignSelf: "center",
   },
 });
 
