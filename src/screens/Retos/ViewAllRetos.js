@@ -65,6 +65,11 @@ const ViewAllRetos = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.titulo}>Retos Disponibles</Text>
 
+       <Button
+        title="Volver al menu de Retos"
+        onPress={() => navigation.navigate('MenuRetos')}
+      />
+
       {retos.length === 0 ? (
         <Text style={styles.aviso}>No hay retos disponibles en este momento.</Text>
       ) : (
