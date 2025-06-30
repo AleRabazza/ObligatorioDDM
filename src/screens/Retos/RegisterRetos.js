@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet, Alert, Text, ScrollView, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, TouchableOpacity} from 'react-native';
+import { View, TextInput, Button, StyleSheet, Alert, Text, ScrollView, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -62,6 +62,12 @@ const RegisterRetos = ({ navigation }) => {
   };
 
   const registrarReto = async () => {
+    // Verificar si no hay materiales disponibles
+    if (materialesDisponibles.length === 0) {
+      Alert.alert('Error', 'No hay materiales disponibles. Crea un material antes de crear un reto.');
+      return;
+    }
+
     if (!nombreReto.trim() || !descripcion.trim() || !categoria.trim() || !puntaje.trim()) {
       Alert.alert('Todos los campos son obligatorios');
       return;
@@ -83,7 +89,7 @@ const RegisterRetos = ({ navigation }) => {
         nombreReto,
         descripcion,
         categoria,
-        fechaLimite: formatDateLocal(fechaLimite), 
+        fechaLimite: formatDateLocal(fechaLimite),
         puntaje,
         usuarioCreador,
       };
@@ -129,22 +135,12 @@ const RegisterRetos = ({ navigation }) => {
             </Picker>
           </View>
 
-     <Text style={styles.label}>Fecha Límite:</Text>
-<TouchableOpacity onPress={showDatepicker} style={styles.fechaInput}>
-  <Text style={styles.fechaText}>
-    {formatDateLocal(fechaLimite)}
-  </Text>
-</TouchableOpacity>
-
-{showDatePicker && (
-  <DateTimePicker
-    value={fechaLimite || new Date()}
-    mode="date"
-    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-    onChange={onDateChange}
-    minimumDate={new Date()} 
-  />
-)}
+          <Text style={styles.label}>Fecha Límite:</Text>
+          <TouchableOpacity onPress={showDatepicker} style={styles.fechaInput}>
+            <Text style={styles.fechaText}>
+              {formatDateLocal(fechaLimite)}
+            </Text>
+          </TouchableOpacity>
 
           {showDatePicker && (
             <DateTimePicker
@@ -156,7 +152,7 @@ const RegisterRetos = ({ navigation }) => {
             />
           )}
 
-        <View style={styles.pickerContainer}>
+          <View style={styles.pickerContainer}>
             <Text style={styles.label}>Puntaje asignado:</Text>
             <Picker
               selectedValue={puntaje}
