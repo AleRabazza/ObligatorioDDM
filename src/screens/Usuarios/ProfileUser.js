@@ -46,7 +46,7 @@ const ProfileUser = ({ navigation }) => {
           await AsyncStorage.removeItem(user.userName);
           await AsyncStorage.removeItem("usuario_logueado");
           Alert.alert("Cuenta eliminada");
-          navigation.navigate("LoginUser");
+          navigation.navigate("MenuInicio");
         },
       },
     ]);
@@ -58,21 +58,13 @@ const ProfileUser = ({ navigation }) => {
     return 10 + Math.floor((puntos - 1000) / 500) + 1;
   };
 
-  const mensajePorNivel = (nivel) => {
-    if (nivel <= 1) return "¡Recién comienzas, seguí así!";
-    if (nivel <= 3) return "¡Buen comienzo! Vas por buen camino.";
-    if (nivel <= 5) return "¡Ya sos un participante activo!";
-    if (nivel <= 7) return "¡Impresionante compromiso!";
-    if (nivel <= 9) return "¡Estás muy cerca del top!";
-    if (nivel === 10) return "¡Nivel 10! ¡Sos un verdadero crack!";
-    return "¡Leyenda del reciclaje urbano!";
-  };
+
 
   if (!user) return null;
 
   const puntos = parseInt(user.puntos) || 0;
   const nivel = calcularNivel(puntos);
-  const mensaje = mensajePorNivel(nivel);
+
 
   // === Barra de progreso ===
   const puntosTotalesNivel = nivel < 10 ? 100 : 500;
@@ -94,17 +86,15 @@ const ProfileUser = ({ navigation }) => {
       <Text style={styles.text}>Correo: {user.email}</Text>
       <Text style={styles.text}>Edad: {user.age}</Text>
       <Text style={styles.text}>Barrio: {user.neighborhood}</Text>
-      <Text style={styles.text}>Puntos acumulados: {puntos}</Text>
-      <Text style={[styles.text, styles.nivel]}>Nivel actual: {nivel}</Text>
-      <Text style={styles.mensaje}>{mensaje}</Text>
+      <Text style={[styles.text, styles.nivel]}>Nivel actual - {nivel}</Text>
+    
 
       {/* Barra de progreso */}
       <View style={styles.progressContainer}>
-        <Text style={styles.text}>Progreso al próximo nivel: {Math.floor(progreso)}%</Text>
         <View style={styles.progressBar}>
           <View style={[styles.progressFill, { width: `${progreso}%` }]} />
         </View>
-        <Text style={styles.text}>Faltan {puntosRestantes} puntos para subir de nivel!</Text>
+        <Text style={styles.text}>Faltan {puntosRestantes} puntos para subir de nivel</Text>
       </View>
         <View style={styles.container}>
       <Button title="Borrar Todo el AsyncStorage" onPress={clearAll} />
@@ -119,12 +109,12 @@ const ProfileUser = ({ navigation }) => {
         customPress={deleteUser}
         btnColor="red"
       />
+
       <ClassicButton
         title="Cerrar sesión"
         customPress={() => navigation.navigate("MenuInicio")}
         btnColor="gray"
       />
-
     </ScrollView>
   );
 };

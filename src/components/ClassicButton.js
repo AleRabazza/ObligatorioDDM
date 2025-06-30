@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const ClassicButton = (props) => {
   return (
-    <TouchableOpacity style={styles.button} onPress={props.customPress}>
+    <TouchableOpacity style={styles.button} onPress={props.customPress} activeOpacity={0.7}>
       <View>
         <Text style={styles.text}>{props.title}</Text>
       </View>
@@ -14,18 +14,18 @@ const ClassicButton = (props) => {
 export default ClassicButton;
 
 const styles = StyleSheet.create({
-  button: {
-    flex: 1,
-    alignContent: 'center',
-    backgroundColor: 'black',
-    color: '#ffffff',
-    padding: 20,
-    marginTop: 15,
-    marginLeft: 30,
-    marginRight: 30,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
+button: {
+  alignContent: 'center',
+  backgroundColor: 'black',
+  color: '#ffffff',
+  padding: 20,
+  marginTop: 15,
+  marginLeft: 30,
+  marginRight: 30,
+  borderRadius: 10,
+  alignItems: 'center',
+}
+,
   text: {
     color: 'white',
   },

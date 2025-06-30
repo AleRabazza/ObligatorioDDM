@@ -42,17 +42,25 @@ const UpdateUser = ({ route, navigation }) => {
   };
 
   const handleSave = async () => {
-    for (let key in newUser) {
-      if (!newUser[key].trim()) {
-        Alert.alert("Todos los campos son obligatorios");
-        return;
-      }
-    }
+  console.log(" Intentando guardar los cambios...");
 
-    if (JSON.stringify(newUser) === JSON.stringify(user)) {
-      Alert.alert("No realizaste cambios");
-      return;
-    }
+
+  if (!newUser.userName.trim() ||
+      !newUser.email.trim() ||
+      !newUser.age.trim() ||
+      !newUser.neighborhood.trim() ||
+      !newUser.profilePicture) {
+    Alert.alert("Todos los campos son obligatorios");
+    return;
+  }
+
+
+  if (JSON.stringify(newUser) === JSON.stringify(user)) {
+    Alert.alert("No realizaste cambios");
+    return;
+  }
+
+  try {
 
     if (newUser.userName !== user.userName) {
       const existing = await AsyncStorage.getItem(newUser.userName);
@@ -62,17 +70,26 @@ const UpdateUser = ({ route, navigation }) => {
       }
     }
 
+    // Guardar datos
     await AsyncStorage.setItem(newUser.userName, JSON.stringify(newUser));
     await AsyncStorage.setItem("usuario_logueado", newUser.userName);
 
+    // Eliminar entrada anterior si el nombre cambio
     if (newUser.userName !== user.userName) {
       await AsyncStorage.removeItem(user.userName);
     }
 
-    Alert.alert("Éxito", "Datos actualizados", [
+    console.log("Usuario actualizado correctamente");
+
+    Alert.alert("Exito", "Datos actualizados", [
       { text: "OK", onPress: () => navigation.navigate("ProfileUser") },
     ]);
-  };
+  } catch (error) {
+    console.error(" Error al guardar los cambios:", error);
+    Alert.alert("Error al guardar los cambios.");
+  }
+};
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

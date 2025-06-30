@@ -49,64 +49,83 @@ const RegisterUser = ({ navigation }) => {
     if (!result.canceled) setProfilePicture(result.assets[0].uri);
   };
 
-  const registerUser = async () => {
-    if (!userName.trim()) {
-      Alert.alert("Ingrese su nombre de usuario");
-      return;
-    }
-    if (!password.trim()) {
-      Alert.alert("Ingrese su contraseña");
-      return;
-    }
-    if (!email.trim() || email.indexOf("@") === -1) {
-      Alert.alert("Ingrese un correo electrónico válido");
-      return;
-    }
-    if (!age.trim()) {
-      Alert.alert("Ingrese su edad");
-      return;
-    }
-    if (!neighborhood.trim()) {
-      Alert.alert("Ingrese su barrio o zona de residencia");
-      return;
-    }
-    if (!profilePicture) {
-      Alert.alert("Seleccione una foto de perfil");
+ const registerUser = async () => {
+  if (!userName.trim()) {
+    Alert.alert("Ingrese su nombre de usuario");
+    return;
+  }
+  if (!password.trim()) {
+    Alert.alert("Ingrese su contraseña");
+    return;
+  }
+  if (!email.trim() || email.indexOf("@") === -1) {
+    Alert.alert("Ingrese un correo electrónico válido");
+    return;
+  }
+  if (!age.trim()) {
+    Alert.alert("Ingrese su edad");
+    return;
+  }
+  if (!neighborhood.trim()) {
+    Alert.alert("Ingrese su barrio o zona de residencia");
+    return;
+  }
+  if (!profilePicture) {
+    Alert.alert("Seleccione una foto de perfil");
+    return;
+  }
+
+  try {
+    const keys = await AsyncStorage.getAllKeys();
+    const allUsers = await AsyncStorage.multiGet(keys);
+    
+    // verificamos q no exista el nombre en otro usuario
+    const existingUser = allUsers.find(([key]) => key === userName);
+    if (existingUser) {
+      Alert.alert("Este nombre de usuario ya está registrado.");
       return;
     }
 
-    try {
-      const existingUser = await AsyncStorage.getItem(userName);
-      if (existingUser) {
-        Alert.alert("Este nombre de usuario ya está registrado.");
-        return;
+    // verificamos q no exista el mail en otro usuario
+    const emailExiste = allUsers.some(([key, value]) => {
+      try {
+        const userData = JSON.parse(value);
+        return userData.email === email;
+      } catch {
+        return false;
       }
+    });
 
-      const newUser = {
-        userName,
-        password,
-        email,
-        age,
-        neighborhood,
-        profilePicture,
-        puntos: 0,
-      };
-
-      await AsyncStorage.setItem(userName, JSON.stringify(newUser));
-      await AsyncStorage.setItem("usuario_logueado", userName);
-
-      clearData();
-      Alert.alert("Éxito", "Usuario registrado correctamente", [
-        {
-          text: "OK",
-          onPress: () => navigation.navigate("MenuGlobal"),
-        },
-      ]);
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Error al registrar el usuario.");
+    if (emailExiste) {
+      Alert.alert("Este correo electrónico ya está en uso.");
+      return;
     }
-  };
+
+    const newUser = {
+      userName,
+      password,
+      email,
+      age,
+      neighborhood,
+      profilePicture,
+      puntos: 0,
+    };
+
+    await AsyncStorage.setItem(userName, JSON.stringify(newUser));
+    await AsyncStorage.setItem("usuario_logueado", userName);
+
+    clearData();
+    Alert.alert("Éxito", "Usuario registrado correctamente", [
+      {
+        text: "OK",
+        onPress: () => navigation.navigate("MenuGlobal"),
+      },
+    ]);
+  } catch (error) {
+    console.error(error);
+    Alert.alert("Error al registrar el usuario.");
+  }
+};
 
   return (
     <View style={styles.container}>

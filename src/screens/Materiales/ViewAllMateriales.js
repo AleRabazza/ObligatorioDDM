@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, SafeAreaView, Alert, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ClassicButton from "../../components/ClassicButton";
+import { useIsFocused } from "@react-navigation/native"; 
 
 const ViewAllMateriales = ({ navigation }) => {
   const [materials, setMaterials] = useState([]);
+  const isFocused = useIsFocused(); 
 
+  
   const obtenerMateriales = async () => {
     try {
       const allMaterials = [];
@@ -19,16 +22,19 @@ const ViewAllMateriales = ({ navigation }) => {
           }
         }
       }
-      setMaterials(allMaterials);
+      setMaterials(allMaterials); 
     } catch (error) {
       console.error(error);
       Alert.alert("Error al obtener los materiales.");
     }
   };
 
+  
   useEffect(() => {
-    obtenerMateriales();
-  }, []);
+    if (isFocused) {
+      obtenerMateriales(); 
+    }
+  }, [isFocused]); 
 
   const eliminarMaterial = async (nombre) => {
     Alert.alert(
@@ -41,7 +47,7 @@ const ViewAllMateriales = ({ navigation }) => {
           style: "destructive",
           onPress: async () => {
             await AsyncStorage.removeItem(`material_${nombre}`);
-            obtenerMateriales();
+            obtenerMateriales(); 
           },
         },
       ]
@@ -94,7 +100,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
   },
-  name: {
+  nombre: {
     fontSize: 16,
     fontWeight: "bold",
     marginTop: 8,
@@ -118,3 +124,4 @@ const styles = StyleSheet.create({
 });
 
 export default ViewAllMateriales;
+
