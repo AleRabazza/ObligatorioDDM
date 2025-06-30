@@ -70,11 +70,11 @@ const UpdateUser = ({ route, navigation }) => {
       }
     }
 
-    // Guardar datos
+   
     await AsyncStorage.setItem(newUser.userName, JSON.stringify(newUser));
     await AsyncStorage.setItem("usuario_logueado", newUser.userName);
 
-    // Eliminar entrada anterior si el nombre cambio
+   
     if (newUser.userName !== user.userName) {
       await AsyncStorage.removeItem(user.userName);
     }
@@ -119,7 +119,7 @@ const UpdateUser = ({ route, navigation }) => {
         placeholder="Barrio"
       />
 
-      {/* Mostrar imagen actual */}
+   
       {newUser.profilePicture ? (
         <Image
           source={{ uri: newUser.profilePicture }}
@@ -127,7 +127,7 @@ const UpdateUser = ({ route, navigation }) => {
         />
       ) : null}
 
-      {/* Botones para seleccionar o tomar nueva foto */}
+      
       <Button title="Seleccionar foto de galería" onPress={pickFromGallery} />
       <Button title="Tomar una foto nueva" onPress={takePhoto} />
 
