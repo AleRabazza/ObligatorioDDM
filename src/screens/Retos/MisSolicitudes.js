@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Button } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Button,
+  Image,
+  Alert,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MisSolicitudes = ({ navigation }) => {
   const [todasSolicitudes, setTodasSolicitudes] = useState([]);
   const [usuarioLogueado, setUsuarioLogueado] = useState('');
-  const [estadoFiltro, setEstadoFiltro] = useState(''); 
+  const [estadoFiltro, setEstadoFiltro] = useState('');
 
   useEffect(() => {
     const cargarSolicitudes = async () => {
@@ -15,13 +23,52 @@ const MisSolicitudes = ({ navigation }) => {
       const data = await AsyncStorage.getItem('participaciones');
       if (data) {
         const todas = JSON.parse(data);
-        const propias = todas.filter((s) => s.usuarioParticipante === usuario);
+        const propias = todas.filter(
+          (s) => s.usuarioParticipante === usuario
+        );
         setTodasSolicitudes(propias);
       }
     };
 
-    cargarSolicitudes();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', cargarSolicitudes);
+    return unsubscribe;
+  }, [navigation]);
+
+  const cancelarParticipacion = async (participacionACancelar) => {
+    Alert.alert(
+      'Confirmar cancelación',
+      '¿Estás seguro de que querés cancelar esta participación?',
+      [
+        { text: 'No', style: 'cancel' },
+        {
+          text: 'Sí, cancelar',
+          onPress: async () => {
+            try {
+              const data = await AsyncStorage.getItem('participaciones');
+              let participaciones = data ? JSON.parse(data) : [];
+
+              participaciones = participaciones.filter(
+                (p) =>
+                  !(
+                    p.usuarioParticipante === participacionACancelar.usuarioParticipante &&
+                    p.nombreReto === participacionACancelar.nombreReto &&
+                    p.estado === 'Pendiente'
+                  )
+              );
+
+              await AsyncStorage.setItem('participaciones', JSON.stringify(participaciones));
+              setTodasSolicitudes(participaciones);
+
+              Alert.alert('Cancelada', 'La participación fue cancelada.');
+            } catch (error) {
+              console.error(error);
+              Alert.alert('Error', 'No se pudo cancelar la participación.');
+            }
+          },
+        },
+      ]
+    );
+  };
 
   const solicitudesMostradas = todasSolicitudes.filter((s) =>
     estadoFiltro ? s.estado === estadoFiltro : true
@@ -29,6 +76,13 @@ const MisSolicitudes = ({ navigation }) => {
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
+      {item.imagen && (
+        <Image
+          source={{ uri: item.imagen }}
+          style={styles.imagen}
+          resizeMode="cover"
+        />
+      )}
       <Text style={styles.nombre}>Reto: {item.nombreReto}</Text>
       <Text>Comentario: {item.comentario || 'Sin comentario'}</Text>
       <Text>Estado: {item.estado}</Text>
@@ -40,12 +94,20 @@ const MisSolicitudes = ({ navigation }) => {
       </Text>
 
       {item.estado === 'Pendiente' && (
-        <Button
-          title="Editar"
-          onPress={() =>
-            navigation.navigate('UpdateParticipacion', { participacion: item })
-          }
-        />
+        <>
+          <Button
+            title="Editar"
+            onPress={() =>
+              navigation.navigate('UpdateParticipaciones', { participacion: item })
+            }
+          />
+          <View style={{ marginTop: 8 }} />
+          <Button
+            title="Cancelar participación"
+            color="red"
+            onPress={() => cancelarParticipacion(item)}
+          />
+        </>
       )}
     </View>
   );
@@ -107,6 +169,12 @@ const styles = StyleSheet.create({
     marginTop: 50,
     fontSize: 16,
     color: 'gray',
+  },
+  imagen: {
+    width: '100%',
+    height: 150,
+    borderRadius: 8,
+    marginBottom: 8,
   },
 });
 

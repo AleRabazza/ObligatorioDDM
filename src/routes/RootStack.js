@@ -24,6 +24,7 @@ import ViewRetos from "../screens/Retos/ViewRetos";
 import SolicitudesDelReto from "../screens/Retos/SolicitudesDelReto";
 import RegisterParticipacion from "../screens/Participaciones/RegisterParticipacion";
 import MisSolicitudes from "../screens/Retos/MisSolicitudes";
+import UpdateParticipaciones from "../screens/Participaciones/UpdateParticipaciones";
 
 const Stack = createStackNavigator();
 
@@ -60,6 +61,7 @@ const RootStack = () => {
 
         {/* Otras pantallas */}
         <Stack.Screen name="RegisterParticipacion" component={RegisterParticipacion} options={{ title: "Registrar Participación" }} />
+        <Stack.Screen name="UpdateParticipaciones" component={UpdateParticipaciones} options={{ title: "Actualizar Participaciones" }} />
         
       </Stack.Navigator>
     </NavigationContainer>

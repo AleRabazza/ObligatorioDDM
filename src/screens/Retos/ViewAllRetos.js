@@ -1,106 +1,78 @@
 import React, { useEffect, useState } from 'react';
-import {View,Text,FlatList, StyleSheet, TextInput,Button,Keyboard,TouchableWithoutFeedback} from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Button,
+  Alert,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Picker } from '@react-native-picker/picker';
 
 const ViewAllRetos = ({ navigation }) => {
   const [retos, setRetos] = useState([]);
-  const [retosFiltrados, setRetosFiltrados] = useState([]);
-  const [usuarioLogueado, setUsuarioLogueado] = useState('');
-  const [busqueda, setBusqueda] = useState('');
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('');
-  const [categorias, setCategorias] = useState([]);
+  const [usuario, setUsuario] = useState('');
 
   useEffect(() => {
-    const cargarRetos = async () => {
-      const user = await AsyncStorage.getItem('usuario_logueado');
-      setUsuarioLogueado(user);
+    const cargarDatos = async () => {
+      try {
+        const usuarioLogueado = await AsyncStorage.getItem('usuario_logueado');
+        setUsuario(usuarioLogueado);
 
-      const data = await AsyncStorage.getItem('retos');
-      if (data) {
-        const todosLosRetos = JSON.parse(data);
-        const otrosRetos = todosLosRetos.filter(reto => reto.usuarioCreador !== user);
-        setRetos(otrosRetos);
-        setRetosFiltrados(otrosRetos);
+        const dataRetos = await AsyncStorage.getItem('retos');
+        const dataParticipaciones = await AsyncStorage.getItem('participaciones');
 
-        const categoriasUnicas = [...new Set(otrosRetos.map(r => r.categoria))];
-        setCategorias(categoriasUnicas);
+        const todosRetos = dataRetos ? JSON.parse(dataRetos) : [];
+        const participaciones = dataParticipaciones ? JSON.parse(dataParticipaciones) : [];
+
+        const retosParticipados = participaciones
+          .filter((p) => p.usuarioParticipante === usuarioLogueado)
+          .map((p) => p.nombreReto);
+
+        const retosDisponibles = todosRetos.filter(
+          (r) => !retosParticipados.includes(r.nombreReto)
+        );
+
+        setRetos(retosDisponibles);
+      } catch (error) {
+        console.error(error);
+        Alert.alert('Error', 'No se pudieron cargar los retos');
       }
     };
 
-    cargarRetos();
-  }, []);
-
-  useEffect(() => {
-    filtrarRetos();
-  }, [busqueda, categoriaSeleccionada]);
-
-  const filtrarRetos = () => {
-    let nuevos = [...retos];
-
-    if (busqueda.trim() !== '') {
-      nuevos = nuevos.filter(r =>
-        r.nombreReto.toLowerCase().includes(busqueda.trim().toLowerCase())
-      );
-    }
-
-    if (categoriaSeleccionada !== '') {
-      nuevos = nuevos.filter(r => r.categoria === categoriaSeleccionada);
-    }
-
-    setRetosFiltrados(nuevos);
-  };
+    const unsubscribe = navigation.addListener('focus', cargarDatos);
+    return unsubscribe;
+  }, [navigation]);
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
-      <Text style={styles.titulo}>{item.nombreReto}</Text>
-      <Text>Categoría: {item.categoria}</Text>
-      <Text>Fecha límite: {item.fechaLimite}</Text>
-      <Text>Puntaje: {item.puntaje}</Text>
-      <Text>Creado por: {item.usuarioCreador}</Text>
-      <View style={styles.boton}>
-        <Button
-          title="Participar"
-          onPress={() => navigation.navigate("RegisterParticipacion", { reto: item })}
-        />
-      </View>
+      <Text style={styles.nombre}>{item.nombreReto}</Text>
+      <Text>Creador: {item.usuarioCreador}</Text>
+      <Text>Descripción: {item.descripcion || 'Sin descripción'}</Text>
+
+      <Button
+        title="Participar"
+        onPress={() =>
+          navigation.navigate('RegisterParticipacion', { reto: item })
+        }
+      />
     </View>
   );
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-        <Text style={styles.header}>Retos de Otros Usuarios</Text>
+    <View style={styles.container}>
+      <Text style={styles.titulo}>Retos Disponibles</Text>
 
-        <TextInput
-          placeholder="Buscar por nombre del reto..."
-          value={busqueda}
-          onChangeText={setBusqueda}
-          style={styles.input}
+      {retos.length === 0 ? (
+        <Text style={styles.aviso}>No hay retos disponibles en este momento.</Text>
+      ) : (
+        <FlatList
+          data={retos}
+          keyExtractor={(item, index) => `${item.nombreReto}-${index}`}
+          renderItem={renderItem}
         />
-
-        <Picker
-          selectedValue={categoriaSeleccionada}
-          onValueChange={(itemValue) => setCategoriaSeleccionada(itemValue)}
-          style={styles.picker}
-        >
-          <Picker.Item label="Todas las categorías" value="" />
-          {categorias.map((cat, index) => (
-            <Picker.Item key={index} label={cat} value={cat} />
-          ))}
-        </Picker>
-
-        {retosFiltrados.length === 0 ? (
-          <Text style={styles.aviso}>No hay retos que coincidan con los filtros.</Text>
-        ) : (
-          <FlatList
-            data={retosFiltrados}
-            keyExtractor={(item, index) => `${item.nombreReto}-${index}`}
-            renderItem={renderItem}
-          />
-        )}
-      </View>
-    </TouchableWithoutFeedback>
+      )}
+    </View>
   );
 };
 
@@ -110,44 +82,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     flex: 1,
   },
-  header: {
+  titulo: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 12,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 8,
-    marginBottom: 10,
-  },
-  picker: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    marginBottom: 10,
-  },
-  aviso: {
-    fontSize: 16,
-    fontStyle: 'italic',
-    color: 'gray',
-    textAlign: 'center',
-    marginTop: 50,
   },
   card: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
     padding: 12,
-    marginBottom: 10,
+    marginBottom: 12,
   },
-  titulo: {
-    fontWeight: 'bold',
+  nombre: {
     fontSize: 16,
-    marginBottom: 4,
+    fontWeight: 'bold',
+    marginBottom: 6,
   },
-  boton: {
-    marginTop: 8,
+  aviso: {
+    textAlign: 'center',
+    marginTop: 50,
+    fontSize: 16,
+    color: 'gray',
   },
 });
 
