@@ -121,7 +121,7 @@ const ProfileUser = ({ navigation }) => {
       />
       <ClassicButton
         title="Cerrar sesión"
-        customPress={logout}
+        customPress={() => navigation.navigate("MenuInicio")}
         btnColor="gray"
       />
 
