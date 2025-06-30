@@ -6,7 +6,7 @@ const MenuMateriales = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
-        <MyButton title="Agregar Materiales" btnColor="blue" btnIcon="plus-circle" customPress={() => navigation.navigate("RegisterMateriales")}/>
+        <MyButton title="Agregar Materiales" btnColor="blue" btnIcon="plus-square" customPress={() => navigation.navigate("RegisterMateriales")}/>
         <MyButton title="Listar Materiales" btnColor="blue" btnIcon="list" customPress={() => navigation.navigate("ViewAllMateriales")} />
         <MyButton title="Volver al menu principal" btnColor="blue" btnIcon="home" customPress={() => navigation.navigate("MenuGlobal")} />
       </ScrollView>

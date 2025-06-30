@@ -6,7 +6,7 @@ const MenuInicio = ({ navigation }) => {
   return (
       <View style={styles.container}>
       <TextComponent text="Bienvenidos" />
-      <MyButton title="Iniciar Sesión" btnColor="blue" btnIcon="user-plus" customPress={() => navigation.navigate("LoginUser")} />
+      <MyButton title="Iniciar Sesión" btnColor="blue" btnIcon="sign-in" customPress={() => navigation.navigate("LoginUser")} />
       <MyButton title="Registrarse " btnColor="blue" btnIcon="user-plus" customPress={() => navigation.navigate("RegisterUser")} />
     </View>
   );
