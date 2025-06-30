@@ -1,53 +1,55 @@
 import React, { useState } from "react";
-import { View, TextInput, StyleSheet, Alert, ScrollView, Text, Button } from "react-native";
+import { View, TextInput, StyleSheet, Alert, ScrollView, Text, Button, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ClassicButton from "../../components/ClassicButton";
 import { Picker } from "@react-native-picker/picker";
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from "expo-image-picker";
 
 const RegisterMateriales = ({ navigation }) => {
-const [nombre, setNombre] = useState("");
-const [categoria, setCategoria] = useState("");
-const [imagen, setImagen] = useState("");
+  const [nombre, setNombre] = useState("");
+  const [categoria, setCategoria] = useState("");
+  const [imagen, setImagen] = useState(null);
 
-const limpiarCampos = () => {
-  setNombre("");
-  setCategoria("");
-  setImagen("");
-};
+  const limpiarCampos = () => {
+    setNombre("");
+    setCategoria("");
+    setImagen(null);
+  };
 
-const requestPerms = async() =>{
-  const cam = await ImagePicker.requestCameraPermissionsAsync();
-  const gal = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  if (!cam.granted || !gal.granted) {
-    Alert.alert('Permisos requeridos',
-                'Habilita acceso a la camara y la galeria.');
-    return false;
-  }
-  return true;
-};
-  
+  const requestPerms = async () => {
+    const cam = await ImagePicker.requestCameraPermissionsAsync();
+    const gal = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!cam.granted || !gal.granted) {
+      Alert.alert("Permisos requeridos", "Habilita acceso a la cámara y la galería.");
+      return false;
+    }
+    return true;
+  };
 
-const pickFromGallery = async () => {
-  if(!(await requestPerms())) return;
-  const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      quality : 1,
-  });
-  if (!result.canceled) setImagen(result.assets[0].uri);
-};
-
-const takePhoto = async () => {
-  if(!(await requestPerms())) return;
-  const result = await ImagePicker.launchCameraAsync({
+  const pickFromGallery = async () => {
+    if (!(await requestPerms())) return;
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
-  });
-  if (!result.canceled) setImagen(result.assets[0].uri);
-};
+    });
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      setImagen(result.assets[0].uri);
+    }
+  };
 
-const guardarMaterial = async () => {
+  const takePhoto = async () => {
+    if (!(await requestPerms())) return;
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      quality: 1,
+    });
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      setImagen(result.assets[0].uri);
+    }
+  };
+
+  const guardarMaterial = async () => {
     if (!nombre.trim()) {
       Alert.alert("Ingrese el nombre del material");
       return;
@@ -56,8 +58,8 @@ const guardarMaterial = async () => {
       Alert.alert("Seleccione una categoría");
       return;
     }
-    if (!imagen.trim()) {
-      Alert.alert("Ingrese la URL de una imagen");
+    if (!imagen) {
+      Alert.alert("Seleccione una imagen del material");
       return;
     }
 
@@ -74,11 +76,10 @@ const guardarMaterial = async () => {
     };
 
     try {
-      
       await AsyncStorage.setItem(`material_${nombre}`, JSON.stringify(nuevoMaterial));
       limpiarCampos();
       Alert.alert("Éxito", "Material guardado correctamente", [
-        { text: "OK", onPress: () => navigation.goBack() }
+        { text: "OK", onPress: () => navigation.goBack() },
       ]);
     } catch (error) {
       console.error(error);
@@ -87,45 +88,61 @@ const guardarMaterial = async () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre del material"
-        value={nombre}
-        onChangeText={setNombre}
-      />
+    <ScrollView contentContainerStyle={styles.scrollContent}>
+      <View style={styles.container}>
+        <TextInput
+          style={styles.input}
+          placeholder="Nombre del material"
+          value={nombre}
+          onChangeText={setNombre}
+        />
 
-      <View style={styles.pickerContainer}>
-        <Text style={styles.label}>Categoría:</Text>
-        <Picker
-          selectedValue={categoria}
-          onValueChange={setCategoria}
-          style={styles.picker}
-        >
-          <Picker.Item label="Seleccione una categoría" value="" />
-          <Picker.Item label="Plástico" value="Plástico" />
-          <Picker.Item label="Metal" value="Metal" />
-          <Picker.Item label="Papel" value="Papel" />
-          <Picker.Item label="Vidrio" value="Vidrio" />
-          <Picker.Item label="Orgánico" value="Orgánico" />
-          <Picker.Item label="Electrónico" value="Electrónico" />
-        </Picker>
+        <View style={styles.pickerContainer}>
+          <Text style={styles.label}>Categoría:</Text>
+          <Picker
+            selectedValue={categoria}
+            onValueChange={setCategoria}
+            style={styles.picker}
+          >
+            <Picker.Item label="Seleccione una categoría" value="" />
+            <Picker.Item label="Plástico" value="Plástico" />
+            <Picker.Item label="Metal" value="Metal" />
+            <Picker.Item label="Papel" value="Papel" />
+            <Picker.Item label="Vidrio" value="Vidrio" />
+            <Picker.Item label="Orgánico" value="Orgánico" />
+            <Picker.Item label="Electrónico" value="Electrónico" />
+          </Picker>
+        </View>
+
+        <Text style={{ marginBottom: 8 }}>Selecciona una imagen del material</Text>
+        <Button title="Seleccionar de la Galería" onPress={pickFromGallery} />
+        <Button title="Tomar Foto" onPress={takePhoto} />
+
+        {/* ✅ Aseguramos que se muestre la imagen */}
+        {imagen ? (
+          <Image source={{ uri: imagen }} style={styles.previewImage} />
+        ) : (
+          <Text style={{ marginVertical: 10, color: "gray", textAlign: "center" }}>
+            Ninguna imagen seleccionada
+          </Text>
+        )}
+
+        <ClassicButton title="Guardar material" customPress={guardarMaterial} />
+        <ClassicButton title="Cancelar" customPress={() => navigation.goBack()} />
       </View>
-
-      <Text>Selecciona tu foto de perfil</Text>
-      <Button title="Seleccionar de la Galería" onPress={pickFromGallery} />
-      <Button title="Tomar Foto" onPress={takePhoto} />
-
-      <ClassicButton title="Guardar material" customPress={guardarMaterial} />
-      <ClassicButton title="Cancelar" customPress={() => navigation.goBack()} />
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+  },
   container: {
     padding: 20,
     alignItems: "center",
+    backgroundColor: "#fff",
   },
   input: {
     width: "90%",
@@ -147,6 +164,15 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     fontSize: 14,
     fontWeight: "bold",
+  },
+  previewImage: {
+    width: 150,
+    height: 150,
+    borderRadius: 10,
+    marginVertical: 20,
+    alignSelf: "center",
+    borderColor: "#000",
+    borderWidth: 1,
   },
 });
 
