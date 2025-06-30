@@ -30,7 +30,9 @@ const ViewAllRetos = ({ navigation }) => {
           .map((p) => p.nombreReto);
 
         const retosDisponibles = todosRetos.filter(
-          (r) => !retosParticipados.includes(r.nombreReto)
+          (r) =>
+            !retosParticipados.includes(r.nombreReto) &&
+            r.usuarioCreador !== usuarioLogueado
         );
 
         setRetos(retosDisponibles);
