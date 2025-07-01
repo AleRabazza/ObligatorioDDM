@@ -62,7 +62,7 @@ const EstadisticasUsuario = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>🏆 Top 3 por Participación en Retos</Text>
+      <Text style={styles.title}>🏆 Top 3 en creación de retos</Text>
       {topParticipacion.length > 0 ? (
         topParticipacion.map((u, index) => (
           <Text key={u.userName} style={styles.item}>
