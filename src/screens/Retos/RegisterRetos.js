@@ -62,7 +62,6 @@ const RegisterRetos = ({ navigation }) => {
   };
 
   const registrarReto = async () => {
-    // Verificar si no hay materiales disponibles
     if (materialesDisponibles.length === 0) {
       Alert.alert('Error', 'No hay materiales disponibles. Crea un material antes de crear un reto.');
       return;
@@ -77,11 +76,11 @@ const RegisterRetos = ({ navigation }) => {
       const retosGuardados = await AsyncStorage.getItem('retos');
       const retosArray = retosGuardados ? JSON.parse(retosGuardados) : [];
 
-      const nombreYaExiste = retosArray.some(r =>
-        r.nombreReto.toLowerCase() === nombreReto.trim().toLowerCase()
-      );
+     const nombreYaExiste = retosArray.some(r =>
+  r.nombreReto.trim().toLowerCase() === nombreReto.trim().toLowerCase()
+);
       if (nombreYaExiste) {
-        Alert.alert('Error', 'Ya existe un reto con ese nombre');
+        Alert.alert('Error', 'Ya has creado un reto con ese nombre');
         return;
       }
 
@@ -122,12 +121,27 @@ const RegisterRetos = ({ navigation }) => {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView contentContainerStyle={styles.container}>
-          <TextInput style={styles.input} placeholder="Nombre del Reto" value={nombreReto} onChangeText={setNombreReto} />
-          <TextInput style={styles.input} placeholder="Descripción" value={descripcion} onChangeText={setDescripcion} multiline />
+          <TextInput
+            style={styles.input}
+            placeholder="Nombre del Reto"
+            value={nombreReto}
+            onChangeText={setNombreReto}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Descripción"
+            value={descripcion}
+            onChangeText={setDescripcion}
+            multiline
+          />
 
           <View style={styles.pickerContainer}>
             <Text style={styles.label}>Material (Categoría):</Text>
-            <Picker selectedValue={categoria} onValueChange={setCategoria} style={styles.picker}>
+            <Picker
+              selectedValue={categoria}
+              onValueChange={setCategoria}
+              style={styles.picker}
+            >
               <Picker.Item label="Seleccione un material" value="" />
               {materialesDisponibles.map((nombre, index) => (
                 <Picker.Item key={index} label={nombre} value={nombre} />

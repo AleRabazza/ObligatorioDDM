@@ -42,54 +42,72 @@ const UpdateUser = ({ route, navigation }) => {
   };
 
   const handleSave = async () => {
-  console.log(" Intentando guardar los cambios...");
+    console.log("Intentando guardar los cambios...");
 
-
-  if (!newUser.userName.trim() ||
+    if (
+      !newUser.userName.trim() ||
       !newUser.email.trim() ||
       !newUser.age.trim() ||
       !newUser.neighborhood.trim() ||
-      !newUser.profilePicture) {
-    Alert.alert("Todos los campos son obligatorios");
-    return;
-  }
+      !newUser.profilePicture
+    ) {
+      Alert.alert("Todos los campos son obligatorios");
+      return;
+    }
 
+    if (!newUser.email.includes("@")) {
+      Alert.alert("Correo inválido");
+      return;
+    }
 
-  if (JSON.stringify(newUser) === JSON.stringify(user)) {
-    Alert.alert("No realizaste cambios");
-    return;
-  }
+    if (JSON.stringify(newUser) === JSON.stringify(user)) {
+      Alert.alert("No realizaste cambios");
+      return;
+    }
 
-  try {
+    try {
+      const allKeys = await AsyncStorage.getAllKeys();
+      const allUsers = await AsyncStorage.multiGet(allKeys);
 
-    if (newUser.userName !== user.userName) {
-      const existing = await AsyncStorage.getItem(newUser.userName);
-      if (existing) {
-        Alert.alert("Error", "Ya existe un usuario con ese nombre");
-        return;
+      for (const [key, value] of allUsers) {
+        if (!value || key === "usuario_logueado") continue;
+
+        const existingUser = JSON.parse(value);
+
+        if (
+          existingUser.email === newUser.email &&
+          existingUser.userName !== user.userName
+        ) {
+          Alert.alert("Error", "Ya existe un usuario con ese correo");
+          return;
+        }
+
+        if (
+          existingUser.userName === newUser.userName &&
+          existingUser.userName !== user.userName
+        ) {
+          Alert.alert("Error", "Ya existe un usuario con ese nombre");
+          return;
+        }
       }
+
+      await AsyncStorage.setItem(newUser.userName, JSON.stringify(newUser));
+      await AsyncStorage.setItem("usuario_logueado", newUser.userName);
+
+      if (newUser.userName !== user.userName) {
+        await AsyncStorage.removeItem(user.userName);
+      }
+
+      console.log("Usuario actualizado correctamente");
+
+      Alert.alert("Éxito", "Datos actualizados", [
+        { text: "OK", onPress: () => navigation.navigate("ProfileUser") },
+      ]);
+    } catch (error) {
+      console.error("Error al guardar los cambios:", error);
+      Alert.alert("Error al guardar los cambios.");
     }
-
-   
-    await AsyncStorage.setItem(newUser.userName, JSON.stringify(newUser));
-    await AsyncStorage.setItem("usuario_logueado", newUser.userName);
-
-   
-    if (newUser.userName !== user.userName) {
-      await AsyncStorage.removeItem(user.userName);
-    }
-
-    console.log("Usuario actualizado correctamente");
-
-    Alert.alert("Exito", "Datos actualizados", [
-      { text: "OK", onPress: () => navigation.navigate("ProfileUser") },
-    ]);
-  } catch (error) {
-    console.error(" Error al guardar los cambios:", error);
-    Alert.alert("Error al guardar los cambios.");
-  }
-};
-
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -119,7 +137,6 @@ const UpdateUser = ({ route, navigation }) => {
         placeholder="Barrio"
       />
 
-   
       {newUser.profilePicture ? (
         <Image
           source={{ uri: newUser.profilePicture }}
@@ -127,7 +144,6 @@ const UpdateUser = ({ route, navigation }) => {
         />
       ) : null}
 
-      
       <Button title="Seleccionar foto de galería" onPress={pickFromGallery} />
       <Button title="Tomar una foto nueva" onPress={takePhoto} />
 

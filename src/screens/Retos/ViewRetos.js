@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Button, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useIsFocused } from '@react-navigation/native'; 
+import { useIsFocused } from '@react-navigation/native';
 
 const ViewRetos = ({ navigation }) => {
   const [misRetos, setMisRetos] = useState([]);
   const [usuario, setUsuario] = useState('');
-  const isFocused = useIsFocused(); 
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     const cargarMisRetos = async () => {
@@ -22,7 +22,7 @@ const ViewRetos = ({ navigation }) => {
     };
 
     cargarMisRetos();
-  }, [isFocused]); 
+  }, [isFocused]);
 
   const eliminarReto = async (nombreReto) => {
     Alert.alert(
@@ -48,32 +48,32 @@ const ViewRetos = ({ navigation }) => {
     );
   };
 
-const renderItem = ({ item }) => (
-  <View style={styles.card}>
-    <Text style={styles.titulo}>{item.nombreReto}</Text>
-    <Text>Categoría: {item.categoria}</Text>
-    <Text>Fecha límite: {item.fechaLimite}</Text>
-    <Text>Puntaje: {item.puntaje}</Text>
+  const renderItem = ({ item }) => (
+    <View style={styles.card}>
+      <Text style={styles.titulo}>{item.nombreReto}</Text>
+      <Text>Descripción: {item.descripcion}</Text>
+      <Text>Categoría: {item.categoria}</Text>
+      <Text>Fecha límite: {item.fechaLimite}</Text>
+      <Text>Puntaje: {item.puntaje}</Text>
 
-    <View style={styles.botones}>
-      <Button title="Editar" onPress={() => navigation.navigate("UpdateReto", { reto: item })} />
-      <Button title="Eliminar" color="red" onPress={() => eliminarReto(item.nombreReto)} />
+      <View style={styles.botones}>
+        <Button title="Editar" onPress={() => navigation.navigate("UpdateReto", { reto: item })} />
+        <Button title="Eliminar" color="red" onPress={() => eliminarReto(item.nombreReto)} />
+      </View>
+
+      <View style={styles.verSolicitudesBtn}>
+        <Button
+          title="Ver Solicitudes"
+          onPress={() => navigation.navigate("SolicitudesDelReto", {
+            nombreReto: item.nombreReto,
+            usuarioCreador: item.usuarioCreador,
+          })}
+          color="#007bff"
+        />
+      </View>
     </View>
+  );
 
-    <View style={styles.verSolicitudesBtn}>
-      <Button
-        title="Ver Solicitudes"
-        onPress={() => navigation.navigate("SolicitudesDelReto", {
-          nombreReto: item.nombreReto,
-          usuarioCreador: item.usuarioCreador,
-        })}
-        color="#007bff"
-      />
-    </View>
-  </View>
-);
-
-  
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Mis Retos</Text>
@@ -116,6 +116,9 @@ const styles = StyleSheet.create({
   botones: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  verSolicitudesBtn: {
     marginTop: 10,
   },
 });
