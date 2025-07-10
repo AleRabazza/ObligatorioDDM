@@ -149,8 +149,8 @@ const UpdateUser = ({ route, navigation }) => {
       <MyButton style={styles.mybutton} title="Seleccionar foto de galería" onPress={pickFromGallery} />
       <MyButton style={styles.mybutton} title="Tomar una foto nueva" onPress={takePhoto} />
 
-      <ClassicButton title="Guardar cambios" customPress={handleSave} />
-      <ClassicButton title="Cancelar" customPress={() => navigation.goBack()} />
+      <ClassicButton title="Guardar cambios" onPress={handleSave} />
+      <ClassicButton title="Cancelar" onPress={() => navigation.goBack()} />
     </ScrollView>
   );
 };
