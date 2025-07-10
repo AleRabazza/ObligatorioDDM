@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  Button,
-  Image,
-  Alert,
+  View, Text, FlatList, StyleSheet, Image, Alert
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ClassicButton from '../../components/ClassicButton';
+import colors from '../../styles/colors';
 
 const MisSolicitudes = ({ navigation }) => {
   const [todasSolicitudes, setTodasSolicitudes] = useState([]);
@@ -23,9 +19,7 @@ const MisSolicitudes = ({ navigation }) => {
       const data = await AsyncStorage.getItem('participaciones');
       if (data) {
         const todas = JSON.parse(data);
-        const propias = todas.filter(
-          (s) => s.usuarioParticipante === usuario
-        );
+        const propias = todas.filter((s) => s.usuarioParticipante === usuario);
         setTodasSolicitudes(propias);
       }
     };
@@ -83,44 +77,44 @@ const MisSolicitudes = ({ navigation }) => {
           resizeMode="cover"
         />
       )}
-      <Text style={styles.nombre}>Reto: {item.nombreReto}</Text>
-      <Text>Comentario: {item.comentario || 'Sin comentario'}</Text>
-      <Text>Estado: {item.estado}</Text>
-      <Text>
-        Ubicación:{' '}
+      <Text style={styles.nombre}> Reto: {item.nombreReto}</Text>
+      <Text style={styles.texto}> Comentario: {item.comentario || 'Sin comentario'}</Text>
+      <Text style={styles.texto}> Estado: {item.estado}</Text>
+      <Text style={styles.texto}>
+         Ubicación:{' '}
         {item.ubicacion
           ? `Lat: ${item.ubicacion.latitud.toFixed(6)} - Lng: ${item.ubicacion.longitud.toFixed(6)}`
           : 'No disponible'}
       </Text>
 
       {item.estado === 'Pendiente' && (
-        <>
-          <Button
+        <View style={styles.botones}>
+          <ClassicButton
             title="Editar"
             onPress={() =>
               navigation.navigate('UpdateParticipaciones', { participacion: item })
             }
+            color={colors.botonPrimario}
           />
-          <View style={{ marginTop: 8 }} />
-          <Button
+          <ClassicButton
             title="Cancelar participación"
-            color="red"
             onPress={() => cancelarParticipacion(item)}
+            color="red"
           />
-        </>
+        </View>
       )}
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Mis Solicitudes</Text>
+      <Text style={styles.header}> Mis Solicitudes</Text>
 
       <View style={styles.filtros}>
-        <Button title="Ver todas" onPress={() => setEstadoFiltro('')} />
-        <Button title="Pendientes" onPress={() => setEstadoFiltro('Pendiente')} />
-        <Button title="Aceptadas" onPress={() => setEstadoFiltro('Aprobado')} />
-        <Button title="Rechazadas" onPress={() => setEstadoFiltro('Rechazado')} />
+        <ClassicButton title="Ver todas" onPress={() => setEstadoFiltro('')} />
+        <ClassicButton title="Pendientes" onPress={() => setEstadoFiltro('Pendiente')} />
+        <ClassicButton title="Aceptadas" onPress={() => setEstadoFiltro('Aprobado')} />
+        <ClassicButton title="Rechazadas" onPress={() => setEstadoFiltro('Rechazado')} />
       </View>
 
       {solicitudesMostradas.length === 0 ? (
@@ -139,42 +133,60 @@ const MisSolicitudes = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: colors.fondo,
     flex: 1,
   },
   header: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 12,
+    color: colors.texto,
+    marginBottom: 16,
+    textAlign: 'center',
   },
   filtros: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-around',
+    gap: 10,
     marginBottom: 20,
   },
   card: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
+    backgroundColor: colors.crema,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
   },
   nombre: {
     fontWeight: 'bold',
     fontSize: 16,
+    marginBottom: 6,
+    color: colors.texto,
+  },
+  texto: {
+    fontSize: 14,
     marginBottom: 4,
+    color: colors.texto,
   },
   aviso: {
     textAlign: 'center',
     marginTop: 50,
     fontSize: 16,
-    color: 'gray',
+    color: colors.gris,
   },
   imagen: {
     width: '100%',
     height: 150,
-    borderRadius: 8,
-    marginBottom: 8,
+    borderRadius: 10,
+    marginBottom: 12,
+  },
+  botones: {
+    marginTop: 12,
+    gap: 8,
   },
 });
 

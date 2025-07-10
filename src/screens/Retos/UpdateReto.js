@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, TextInput, StyleSheet, Button, Alert, Text,
+  View, TextInput, StyleSheet, Alert, Text,
   KeyboardAvoidingView, ScrollView, Platform,
   TouchableOpacity, TouchableWithoutFeedback, Keyboard
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import ClassicButton from '../../components/ClassicButton';
+import colors from '../../styles/colors';
 
 const UpdateReto = ({ route, navigation }) => {
   const { reto } = route.params;
@@ -78,7 +80,7 @@ const UpdateReto = ({ route, navigation }) => {
           descripcion,
           categoria: materialSeleccionado,
           fechaLimite: formatDateLocal(fechaLimite),
-          puntaje, // el valor se mantiene, no se edita
+          puntaje,
           usuarioCreador,
         };
 
@@ -109,21 +111,23 @@ const UpdateReto = ({ route, navigation }) => {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView contentContainerStyle={styles.container}>
-          <Text style={styles.header}>Editar Reto</Text>
+          <Text style={styles.header}>✏️ Editar Reto</Text>
 
           <TextInput
             style={styles.input}
             placeholder="Nombre del Reto"
             value={nombreReto}
             onChangeText={setNombreReto}
+            placeholderTextColor={colors.gris}
           />
 
           <TextInput
-            style={styles.input}
+            style={[styles.input, { height: 80 }]}
             placeholder="Descripción"
             value={descripcion}
             onChangeText={setDescripcion}
             multiline
+            placeholderTextColor={colors.gris}
           />
 
           <View style={styles.pickerContainer}>
@@ -132,6 +136,7 @@ const UpdateReto = ({ route, navigation }) => {
               selectedValue={materialSeleccionado}
               onValueChange={setMaterialSeleccionado}
               style={styles.picker}
+              dropdownIconColor={colors.texto}
             >
               <Picker.Item label="Seleccione un material" value="" />
               {materialesDisponibles.map((material, index) => (
@@ -142,9 +147,7 @@ const UpdateReto = ({ route, navigation }) => {
 
           <Text style={styles.label}>Fecha Límite:</Text>
           <TouchableOpacity onPress={showDatepicker} style={styles.fechaInput}>
-            <Text style={styles.fechaText}>
-              {formatDateLocal(fechaLimite)}
-            </Text>
+            <Text style={styles.fechaText}>{formatDateLocal(fechaLimite)}</Text>
           </TouchableOpacity>
 
           {showDatePicker && (
@@ -157,19 +160,13 @@ const UpdateReto = ({ route, navigation }) => {
             />
           )}
 
-          {/* Puntaje visible pero no editable */}
           <View style={styles.pickerContainer}>
             <Text style={styles.label}>Puntaje asignado:</Text>
             <Text style={styles.puntajeTexto}>{puntaje} puntos</Text>
           </View>
 
-          <View style={styles.buttonContainer}>
-            <Button title="Guardar Cambios" onPress={actualizarReto} />
-          </View>
-
-          <View style={styles.buttonContainer}>
-            <Button title="Cancelar" onPress={() => navigation.goBack()} color="gray" />
-          </View>
+          <ClassicButton title="Guardar Cambios" onPress={actualizarReto} />
+          <ClassicButton title="Cancelar" onPress={() => navigation.goBack()} color={colors.gris} />
         </ScrollView>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
@@ -179,53 +176,63 @@ const UpdateReto = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: colors.fondo,
   },
   header: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 12,
+    color: colors.texto,
+    marginBottom: 20,
+    textAlign: 'center',
   },
   input: {
-    height: 40,
-    borderColor: '#ccc',
+    backgroundColor: colors.fondoClaro,
+    borderRadius: 10,
+    padding: 12,
+    fontSize: 16,
+    marginBottom: 16,
+    color: colors.texto,
     borderWidth: 1,
-    borderRadius: 4,
-    marginBottom: 12,
-    paddingLeft: 8,
+    borderColor: colors.sombra,
   },
   pickerContainer: {
-    marginBottom: 12,
+    backgroundColor: colors.fondoClaro,
+    borderRadius: 10,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: colors.sombra,
   },
   picker: {
-    backgroundColor: '#eee',
-    borderRadius: 6,
+    width: '100%',
+    color: colors.texto,
   },
   label: {
-    marginBottom: 4,
     fontWeight: 'bold',
+    fontSize: 16,
+    color: colors.texto,
+    paddingLeft: 10,
+    paddingTop: 10,
+    marginBottom: 6,
   },
   fechaInput: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
-    padding: 10,
-    marginBottom: 12,
-    backgroundColor: '#eee',
+    borderColor: colors.sombra,
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 16,
+    backgroundColor: colors.fondoClaro,
   },
   fechaText: {
     fontSize: 16,
-    color: '#333',
+    color: colors.texto,
   },
   puntajeTexto: {
     fontSize: 16,
-    backgroundColor: '#eee',
-    padding: 10,
-    borderRadius: 4,
-    color: '#333',
-  },
-  buttonContainer: {
-    marginBottom: 10,
+    padding: 12,
+    borderRadius: 10,
+    backgroundColor: colors.fondoClaro,
+    color: colors.texto,
+    marginBottom: 16,
   },
 });
 

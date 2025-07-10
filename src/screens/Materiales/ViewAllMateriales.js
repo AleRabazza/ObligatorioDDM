@@ -3,6 +3,7 @@ import { View, Text, FlatList, StyleSheet, SafeAreaView, Alert, Image } from "re
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ClassicButton from "../../components/ClassicButton";
 import { useIsFocused } from "@react-navigation/native"; 
+import colors from "../../styles/colors";
 
 const ViewAllMateriales = ({ navigation }) => {
   const [materials, setMaterials] = useState([]);
@@ -66,12 +67,12 @@ const ViewAllMateriales = ({ navigation }) => {
 
       <ClassicButton
         title="Editar material"
-        customPress={() => navigation.navigate("UpdateMateriales", { material: item, obtenerMateriales })}
+        onPress={() => navigation.navigate("UpdateMateriales", { material: item, obtenerMateriales })}
       />
       <ClassicButton
         title="Eliminar material"
         btnColor="red"
-        customPress={() => eliminarMaterial(item.nombre)}
+        onPress={() => eliminarMaterial(item.nombre)}
       />
     </View>
   );
@@ -92,11 +93,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    backgroundColor: colors.fondo
   },
   item: {
     marginBottom: 20,
     padding: 12,
-    backgroundColor: "#f2f2f2",
+    backgroundColor: colors.crema,
     borderRadius: 8,
     alignItems: "center",
   },

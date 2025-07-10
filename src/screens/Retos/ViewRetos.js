@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Button, Alert } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import ClassicButton from '../../components/ClassicButton';
+import colors from '../../styles/colors';
 
 const ViewRetos = ({ navigation }) => {
   const [misRetos, setMisRetos] = useState([]);
@@ -51,34 +53,40 @@ const ViewRetos = ({ navigation }) => {
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <Text style={styles.titulo}>{item.nombreReto}</Text>
-      <Text>Descripción: {item.descripcion}</Text>
-      <Text>Categoría: {item.categoria}</Text>
-      <Text>Fecha límite: {item.fechaLimite}</Text>
-      <Text>Puntaje: {item.puntaje}</Text>
+      <Text style={styles.texto}>Descripción: {item.descripcion}</Text>
+      <Text style={styles.texto}>Categoría: {item.categoria}</Text>
+      <Text style={styles.texto}>Fecha límite: {item.fechaLimite}</Text>
+      <Text style={styles.texto}>Puntaje: {item.puntaje}</Text>
 
       <View style={styles.botones}>
-        <Button title="Editar" onPress={() => navigation.navigate("UpdateReto", { reto: item })} />
-        <Button title="Eliminar" color="red" onPress={() => eliminarReto(item.nombreReto)} />
-      </View>
-
-      <View style={styles.verSolicitudesBtn}>
-        <Button
-          title="Ver Solicitudes"
-          onPress={() => navigation.navigate("SolicitudesDelReto", {
-            nombreReto: item.nombreReto,
-            usuarioCreador: item.usuarioCreador,
-          })}
-          color="#007bff"
+        <ClassicButton
+          title="Editar"
+          onPress={() => navigation.navigate("UpdateReto", { reto: item })}
+          color={colors.botonPrimario}
+        />
+        <ClassicButton
+          title="Eliminar"
+          onPress={() => eliminarReto(item.nombreReto)}
+          color="red"
         />
       </View>
+
+      <ClassicButton
+        title="Ver Solicitudes"
+        onPress={() => navigation.navigate("SolicitudesDelReto", {
+          nombreReto: item.nombreReto,
+          usuarioCreador: item.usuarioCreador,
+        })}
+        color={colors.botonSecundario}
+      />
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Mis Retos</Text>
+      <Text style={styles.header}>🌿 Mis Retos</Text>
       {misRetos.length === 0 ? (
-        <Text>No has creado ningún reto todavía.</Text>
+        <Text style={styles.texto}>No has creado ningún reto todavía.</Text>
       ) : (
         <FlatList
           data={misRetos}
@@ -93,33 +101,42 @@ const ViewRetos = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: colors.fondo,
     flex: 1,
   },
   header: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
+    color: colors.texto,
     marginBottom: 12,
+    textAlign: 'center',
   },
   card: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 10,
+    backgroundColor: colors.crema || '#F5F0E1',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
   },
   titulo: {
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 18,
+    color: colors.botonPrimario,
+    marginBottom: 8,
+  },
+  texto: {
+    fontSize: 14,
+    color: colors.texto,
     marginBottom: 4,
   },
   botones: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 10,
-  },
-  verSolicitudesBtn: {
-    marginTop: 10,
+    marginVertical: 10,
   },
 });
 

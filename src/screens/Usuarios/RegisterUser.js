@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { StyleSheet, View, TextInput, Button, Alert, Text, Image } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
+import colors from "../../styles/colors";
+import MyButton from "../../components/MyButton";
+import ClassicButton from "../../components/ClassicButton";
 
 const RegisterUser = ({ navigation }) => {
   const [userName, setUserName] = useState("");
@@ -162,9 +165,9 @@ const RegisterUser = ({ navigation }) => {
         value={neighborhood}
         onChangeText={setNeighborhood}
       />
-      <Text style={{ marginBottom: 8 }}>Selecciona tu foto de perfil</Text>
-      <Button title="Seleccionar de la Galería" onPress={pickFromGallery} />
-      <Button title="Tomar Foto" onPress={takePhoto} />
+      <Text style={{ marginBottom: 8  }}>Selecciona tu foto de perfil</Text>
+      <MyButton title="Seleccionar de la Galería" onPress={pickFromGallery} />
+      <MyButton title="Tomar Foto" onPress={takePhoto} />
 
       {/* Mostrar la imagen seleccionada o tomada */}
       {profilePicture && (
@@ -175,11 +178,11 @@ const RegisterUser = ({ navigation }) => {
       )}
 
       <View style={{ marginTop: 20 }}>
-        <Button title="Registrar" onPress={registerUser} />
+        <MyButton title="Registrar" onPress={registerUser} />
       </View>
 
       <View style={{ marginTop: 10 }}>
-        <Button title="Cancelar" color="red" onPress={() => navigation.goBack()} />
+        <ClassicButton title="Cancelar" color="red" onPress={() => navigation.goBack()} />
       </View>
     </View>
   );
@@ -189,14 +192,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: colors.fondo,
   },
   input: {
     height: 40,
     borderColor: "#ccc",
-    borderWidth: 1,
+    borderWidth: 2,
     borderRadius: 4,
-    marginBottom: 12,
+    marginBottom: 15,
     paddingLeft: 8,
   },
   profileImage: {

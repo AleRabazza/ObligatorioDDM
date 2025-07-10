@@ -3,6 +3,8 @@ import { View, TextInput, Alert, StyleSheet, ScrollView, Image, Button } from "r
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import ClassicButton from "../../components/ClassicButton";
+import colors from "../../styles/colors";
+import MyButton from "../../components/MyButton";
 
 const UpdateUser = ({ route, navigation }) => {
   const { user } = route.params;
@@ -144,8 +146,8 @@ const UpdateUser = ({ route, navigation }) => {
         />
       ) : null}
 
-      <Button title="Seleccionar foto de galería" onPress={pickFromGallery} />
-      <Button title="Tomar una foto nueva" onPress={takePhoto} />
+      <MyButton style={styles.mybutton} title="Seleccionar foto de galería" onPress={pickFromGallery} />
+      <MyButton style={styles.mybutton} title="Tomar una foto nueva" onPress={takePhoto} />
 
       <ClassicButton title="Guardar cambios" customPress={handleSave} />
       <ClassicButton title="Cancelar" customPress={() => navigation.goBack()} />
@@ -158,6 +160,7 @@ const styles = StyleSheet.create({
     padding: 16,
     flexGrow: 1,
     alignItems: "center",
+    backgroundColor: colors.fondo
   },
   input: {
     height: 40,
@@ -174,6 +177,9 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginVertical: 20,
   },
+  mybutton:{
+    backgroundColor : colors.gris
+  }
 });
 
 export default UpdateUser;

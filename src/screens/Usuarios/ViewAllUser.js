@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, SafeAreaView, FlatList, Text, Alert, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import colors from "../../styles/colors";
 
 const ViewAllUser = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -61,13 +62,13 @@ const ViewAllUser = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: colors.fondo,
     padding: 16,
   },
   userContainer: {
     marginBottom: 20,
     padding: 10,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: colors.crema,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#ddd",

@@ -3,6 +3,7 @@ import { View, Text, Alert, StyleSheet, ScrollView, Image, Button } from "react-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ClassicButton from "../../components/ClassicButton";
 import { useFocusEffect } from "@react-navigation/native";
+import colors from "../../styles/colors";
 
 
 const ProfileUser = ({ navigation }) => {
@@ -96,23 +97,21 @@ const ProfileUser = ({ navigation }) => {
         </View>
         <Text style={styles.text}>Faltan {puntosRestantes} puntos para subir de nivel</Text>
       </View>
-        <View style={styles.container}>
-      <Button title="Borrar Todo el AsyncStorage" onPress={clearAll} />
-    </View> 
+      <Button title="Borrar Todo el AsyncStorage" onPress={clearAll} /> 
       {/* Botones */}
       <ClassicButton
         title="Editar"
-        customPress={() => navigation.navigate("UpdateUser", { user })}
+        onPress={() => navigation.navigate("UpdateUser", { user })}
       />
       <ClassicButton
         title="Eliminar cuenta"
-        customPress={deleteUser}
+        onPress={deleteUser}
         btnColor="red"
       />
 
       <ClassicButton
         title="Cerrar sesión"
-        customPress={() => navigation.navigate("MenuInicio")}
+        onPress={() => navigation.navigate("MenuInicio")}
         btnColor="gray"
       />
     </ScrollView>
@@ -123,6 +122,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     alignItems: "center",
+    backgroundColor:colors.fondo,
   },
   title: {
     fontSize: 20,
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   },
   nivel: {
     fontWeight: "bold",
-    color: "#2a9d8f",
+    color: colors.botonPrimario,
     fontSize: 18,
   },
   mensaje: {
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   progressBar: {
     width: '100%',
     height: 20,
-    backgroundColor: '#eee',
+    backgroundColor: colors.gris,
     borderRadius: 10,
     overflow: 'hidden',
     marginTop: 4,

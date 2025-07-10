@@ -1,32 +1,27 @@
-import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React from 'react';
+import { Text, TouchableOpacity, StyleSheet } from 'react-native';
+import colors from '../styles/colors';
 
-const ClassicButton = (props) => {
-  return (
-    <TouchableOpacity style={styles.button} onPress={props.customPress} activeOpacity={0.7}>
-      <View>
-        <Text style={styles.text}>{props.title}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-};
-
-export default ClassicButton;
+const ClassicButton = ({ onPress, title, color = colors.botonPrimario }) => (
+  <TouchableOpacity style={[styles.button, { backgroundColor: color }]} onPress={onPress}>
+    <Text style={styles.text}>{title}</Text>
+  </TouchableOpacity>
+);
 
 const styles = StyleSheet.create({
-button: {
-  alignContent: 'center',
-  backgroundColor: 'black',
-  color: '#ffffff',
-  padding: 20,
-  marginTop: 15,
-  marginLeft: 30,
-  marginRight: 30,
-  borderRadius: 10,
-  alignItems: 'center',
-}
-,
-  text: {
-    color: 'white',
+  button: {
+    alignContent: 'center',
+    padding: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginVertical: 10,
+    elevation: 2
   },
+  text: {
+    color: colors.blanco,
+    fontWeight: 'bold',
+    fontSize: 16
+  }
 });
+
+export default ClassicButton;

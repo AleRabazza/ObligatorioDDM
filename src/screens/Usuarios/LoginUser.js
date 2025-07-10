@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { StyleSheet, View, TextInput, Button, Alert } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import colors from "../../styles/colors";
+import MyInputText from "../../components/InputText";
+import MyButton from "../../components/MyButton";
+import ClassicButton from "../../components/ClassicButton";
 
 const LoginUser = ({ navigation }) => {
   const [userName, setUserName] = useState("");
@@ -46,9 +50,9 @@ const LoginUser = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <TextInput style={styles.input} placeholder="Nombre de Usuario" value={userName} onChangeText={setUserName} />
-      <TextInput style={styles.input} placeholder="Contraseña" secureTextEntry value={password} onChangeText={setPassword} />
-      <Button title="Iniciar Sesión" onPress={loginUser} />
+      <MyInputText style={styles.input} placeholder="Nombre de Usuario" value={userName} onChangeText={setUserName} />
+      <MyInputText style={styles.input} placeholder="Contraseña" secureTextEntry value={password} onChangeText={setPassword} />
+      <ClassicButton title="Iniciar Sesión" onPress={loginUser} />
     </View>
   );
 };
@@ -57,7 +61,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: colors.fondo,
   },
   input: {
     height: 40,
@@ -66,6 +70,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     marginBottom: 12,
     paddingLeft: 8,
+    backgroundColor: colors.fondoClaro,
   },
 });
 

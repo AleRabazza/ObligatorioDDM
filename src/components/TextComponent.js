@@ -1,21 +1,17 @@
-// components/Text.js
-import React from "react";
-import { Text as RNText, StyleSheet } from "react-native";
+import React from 'react';
+import { Text, StyleSheet } from 'react-native';
+import colors from '../styles/colors';
 
-const TextComponent = (props) => {
-  return (
-    <RNText style={styles.text}>
-      {props.text}
-    </RNText>
-  );
-};
+const TextComponent = ({ children, style }) => (
+  <Text style={[styles.text, style]}>{children}</Text>
+);
 
 const styles = StyleSheet.create({
   text: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#000',
-  },
+    fontSize: 16,
+    color: colors.texto,
+    fontWeight: '500'
+  }
 });
 
 export default TextComponent;

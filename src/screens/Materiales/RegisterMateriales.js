@@ -1,9 +1,13 @@
 import React, { useState } from "react";
-import { View, TextInput, StyleSheet, Alert, ScrollView, Text, Button, Image } from "react-native";
+import {
+  View, TextInput, StyleSheet, Alert,
+  ScrollView, Text, Image
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ClassicButton from "../../components/ClassicButton";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
+import colors from "../../styles/colors";
 
 const RegisterMateriales = ({ navigation }) => {
   const [nombre, setNombre] = useState("");
@@ -50,30 +54,14 @@ const RegisterMateriales = ({ navigation }) => {
   };
 
   const guardarMaterial = async () => {
-    if (!nombre.trim()) {
-      Alert.alert("Ingrese el nombre del material");
-      return;
-    }
-    if (!categoria.trim()) {
-      Alert.alert("Seleccione una categoría");
-      return;
-    }
-    if (!imagen) {
-      Alert.alert("Seleccione una imagen del material");
-      return;
-    }
+    if (!nombre.trim()) return Alert.alert("Ingrese el nombre del material");
+    if (!categoria.trim()) return Alert.alert("Seleccione una categoría");
+    if (!imagen) return Alert.alert("Seleccione una imagen del material");
 
     const existingMaterial = await AsyncStorage.getItem(`material_${nombre}`);
-    if (existingMaterial) {
-      Alert.alert("Error", "Ya existe un material con ese nombre.");
-      return;
-    }
+    if (existingMaterial) return Alert.alert("Error", "Ya existe un material con ese nombre.");
 
-    const nuevoMaterial = {
-      nombre,
-      categoria,
-      imagen,
-    };
+    const nuevoMaterial = { nombre, categoria, imagen };
 
     try {
       await AsyncStorage.setItem(`material_${nombre}`, JSON.stringify(nuevoMaterial));
@@ -90,19 +78,23 @@ const RegisterMateriales = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
+        <Text style={styles.title}>Registrar Material</Text>
+
         <TextInput
           style={styles.input}
           placeholder="Nombre del material"
+          placeholderTextColor={colors.gris}
           value={nombre}
           onChangeText={setNombre}
         />
 
         <View style={styles.pickerContainer}>
-          <Text style={styles.label}>Categoría:</Text>
+          <Text style={styles.label}>Categoría</Text>
           <Picker
             selectedValue={categoria}
             onValueChange={setCategoria}
             style={styles.picker}
+            dropdownIconColor={colors.texto}
           >
             <Picker.Item label="Seleccione una categoría" value="" />
             <Picker.Item label="Plástico" value="Plástico" />
@@ -114,21 +106,18 @@ const RegisterMateriales = ({ navigation }) => {
           </Picker>
         </View>
 
-        <Text style={{ marginBottom: 8 }}>Selecciona una imagen del material</Text>
-        <Button title="Seleccionar de la Galería" onPress={pickFromGallery} />
-        <Button title="Tomar Foto" onPress={takePhoto} />
+        <Text style={styles.label}>Imagen del material</Text>
+        <ClassicButton title="Seleccionar de la Galería" onPress={pickFromGallery} />
+        <ClassicButton title="Tomar Foto" onPress={takePhoto} />
 
-        {/* ✅ Aseguramos que se muestre la imagen */}
         {imagen ? (
           <Image source={{ uri: imagen }} style={styles.previewImage} />
         ) : (
-          <Text style={{ marginVertical: 10, color: "gray", textAlign: "center" }}>
-            Ninguna imagen seleccionada
-          </Text>
+          <Text style={styles.noImage}>Ninguna imagen seleccionada</Text>
         )}
 
-        <ClassicButton title="Guardar material" customPress={guardarMaterial} />
-        <ClassicButton title="Cancelar" customPress={() => navigation.goBack()} />
+        <ClassicButton title="Guardar material" onPress={guardarMaterial} />
+        <ClassicButton title="Cancelar" onPress={() => navigation.goBack()} color={colors.gris} />
       </View>
     </ScrollView>
   );
@@ -138,41 +127,62 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     justifyContent: "center",
+    backgroundColor: colors.fondo,
   },
   container: {
     padding: 20,
     alignItems: "center",
-    backgroundColor: "#fff",
+  },
+  title: {
+    fontSize: 22,
+    color: colors.texto,
+    fontWeight: "bold",
+    marginBottom: 20,
   },
   input: {
-    width: "90%",
+    width: "100%",
+    backgroundColor: colors.fondoClaro,
+    borderRadius: 10,
+    padding: 12,
+    fontSize: 16,
+    marginBottom: 16,
+    color: colors.texto,
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 6,
-    padding: 10,
-    marginBottom: 12,
+    borderColor: colors.sombra,
   },
   pickerContainer: {
-    width: "90%",
-    marginBottom: 12,
+    width: "100%",
+    backgroundColor: colors.fondoClaro,
+    borderRadius: 10,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: colors.sombra,
   },
   picker: {
-    backgroundColor: "#eee",
-    borderRadius: 6,
+    width: "100%",
+    color: colors.texto,
   },
   label: {
-    marginBottom: 4,
-    fontSize: 14,
     fontWeight: "bold",
+    fontSize: 16,
+    marginBottom: 6,
+    color: colors.texto,
+    paddingLeft: 10,
+    paddingTop: 10,
   },
   previewImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 10,
+    width: 160,
+    height: 160,
+    borderRadius: 12,
     marginVertical: 20,
-    alignSelf: "center",
-    borderColor: "#000",
-    borderWidth: 1,
+    borderColor: colors.sombra,
+    borderWidth: 2,
+  },
+  noImage: {
+    marginVertical: 10,
+    color: colors.gris,
+    fontStyle: "italic",
+    textAlign: "center",
   },
 });
 

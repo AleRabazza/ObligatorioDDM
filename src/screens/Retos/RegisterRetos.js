@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet, Alert, Text, ScrollView, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
+import {
+  View, TextInput, StyleSheet, Alert, Text,
+  ScrollView, KeyboardAvoidingView, Platform,
+  TouchableWithoutFeedback, Keyboard, TouchableOpacity
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import ClassicButton from '../../components/ClassicButton';
+import colors from '../../styles/colors';
 
 const RegisterRetos = ({ navigation }) => {
   const [nombreReto, setNombreReto] = useState('');
@@ -76,9 +82,10 @@ const RegisterRetos = ({ navigation }) => {
       const retosGuardados = await AsyncStorage.getItem('retos');
       const retosArray = retosGuardados ? JSON.parse(retosGuardados) : [];
 
-     const nombreYaExiste = retosArray.some(r =>
-  r.nombreReto.trim().toLowerCase() === nombreReto.trim().toLowerCase()
-);
+      const nombreYaExiste = retosArray.some(r =>
+        r.nombreReto.trim().toLowerCase() === nombreReto.trim().toLowerCase()
+      );
+
       if (nombreYaExiste) {
         Alert.alert('Error', 'Ya has creado un reto con ese nombre');
         return;
@@ -121,18 +128,23 @@ const RegisterRetos = ({ navigation }) => {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView contentContainerStyle={styles.container}>
+          <Text style={styles.title}>Registrar Nuevo Reto</Text>
+
           <TextInput
             style={styles.input}
             placeholder="Nombre del Reto"
             value={nombreReto}
             onChangeText={setNombreReto}
+            placeholderTextColor={colors.gris}
           />
+
           <TextInput
-            style={styles.input}
+            style={[styles.input, { height: 80 }]}
             placeholder="Descripción"
             value={descripcion}
             onChangeText={setDescripcion}
             multiline
+            placeholderTextColor={colors.gris}
           />
 
           <View style={styles.pickerContainer}>
@@ -141,6 +153,7 @@ const RegisterRetos = ({ navigation }) => {
               selectedValue={categoria}
               onValueChange={setCategoria}
               style={styles.picker}
+              dropdownIconColor={colors.texto}
             >
               <Picker.Item label="Seleccione un material" value="" />
               {materialesDisponibles.map((nombre, index) => (
@@ -151,9 +164,7 @@ const RegisterRetos = ({ navigation }) => {
 
           <Text style={styles.label}>Fecha Límite:</Text>
           <TouchableOpacity onPress={showDatepicker} style={styles.fechaInput}>
-            <Text style={styles.fechaText}>
-              {formatDateLocal(fechaLimite)}
-            </Text>
+            <Text style={styles.fechaText}>{formatDateLocal(fechaLimite)}</Text>
           </TouchableOpacity>
 
           {showDatePicker && (
@@ -172,6 +183,7 @@ const RegisterRetos = ({ navigation }) => {
               selectedValue={puntaje}
               onValueChange={setPuntaje}
               style={styles.picker}
+              dropdownIconColor={colors.texto}
             >
               <Picker.Item label="Seleccione un puntaje" value="" />
               <Picker.Item label="20 puntos" value="20" />
@@ -180,10 +192,8 @@ const RegisterRetos = ({ navigation }) => {
             </Picker>
           </View>
 
-          <View style={{ marginTop: 20 }}>
-            <Button title="Registrar Reto" onPress={registrarReto} />
-          </View>
-
+          <ClassicButton title="Registrar Reto" onPress={registrarReto} />
+          <ClassicButton title="Cancelar" onPress={() => navigation.goBack()} color={colors.gris} />
         </ScrollView>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
@@ -192,39 +202,56 @@ const RegisterRetos = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: '#fff',
+    padding: 20,
+    backgroundColor: colors.crema || "#F5F0E1",
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: colors.texto,
+    marginBottom: 20,
+    textAlign: "center",
   },
   input: {
-    height: 40,
-    borderColor: '#ccc',
+    backgroundColor: colors.fondoClaro,
+    borderRadius: 10,
+    padding: 12,
+    fontSize: 16,
+    marginBottom: 16,
+    color: colors.texto,
     borderWidth: 1,
-    borderRadius: 4,
-    marginBottom: 12,
-    paddingLeft: 8,
+    borderColor: colors.sombra,
   },
   pickerContainer: {
-    marginBottom: 12,
+    backgroundColor: colors.fondoClaro,
+    borderRadius: 10,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: colors.sombra,
   },
   picker: {
-    backgroundColor: '#eee',
-    borderRadius: 6,
+    width: "100%",
+    color: colors.texto,
   },
   label: {
-    marginBottom: 4,
-    fontWeight: 'bold',
+    fontWeight: "bold",
+    fontSize: 16,
+    marginBottom: 6,
+    color: colors.texto,
+    paddingLeft: 10,
+    paddingTop: 10,
   },
   fechaInput: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
-    padding: 10,
-    marginBottom: 12,
-    backgroundColor: '#eee',
+    borderColor: colors.sombra,
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 16,
+    backgroundColor: colors.fondoClaro,
   },
   fechaText: {
     fontSize: 16,
-    color: '#333',
+    color: colors.texto,
   },
 });
 
